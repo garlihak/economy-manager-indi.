@@ -1,0 +1,2492 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🏘️ 우리 마을 경제 매니저: 개인 로그라이크 v3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Jua&family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <style>
+/* ───────────────────────────────────────────────
+   우리 마을 경제 매니저 — 게임 UI 디자인 토큰
+   동물의 숲 × 타이쿤 게임 룩
+─────────────────────────────────────────────── */
+:root {
+  /* Brand cream/sky palette */
+  --cream-50: #FFFBEE;
+  --cream-100: #FFF3D6;
+  --cream-200: #FFE6A8;
+  --cream-300: #FFD371;
+  --sky-100: #DFF5F1;
+  --sky-200: #B6E8DC;
+  --sky-300: #7DD0BD;
+
+  /* Game wood / accents */
+  --wood-light: #F2C98A;
+  --wood: #C68A4F;
+  --wood-deep: #8E5A2E;
+  --leaf: #7DB342;
+  --leaf-deep: #4F8A2E;
+  --berry: #E8645A;
+  --berry-deep: #B83C30;
+  --sunny: #FFC83D;
+  --sunny-deep: #E0A21A;
+  --grape: #B388E0;
+  --ocean: #4FB3E8;
+  --ocean-deep: #2A7AAE;
+
+  /* Neutrals */
+  --ink: #5A3A22;
+  --ink-soft: #8A6B4F;
+  --paper: #FFF8E7;
+
+  /* Pastel pairs (trade) */
+  --in-bg: #DCEEFB;
+  --in-border: #8FC4ED;
+  --in-ink: #1F5C8E;
+  --out-bg: #FBE0DC;
+  --out-border: #ED9C92;
+  --out-ink: #A6362A;
+
+  /* Neon for teacher TV */
+  --tv-bg-1: #0E1B3D;
+  --tv-bg-2: #1A2B5E;
+  --neon-yellow: #FFE45E;
+  --neon-cyan: #5CE5E5;
+  --neon-pink: #FF6FD8;
+  --neon-green: #6CFFB1;
+  --neon-orange: #FFA94D;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Jua', 'Do Hyeon', 'Noto Sans KR', sans-serif;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  background: var(--cream-50);
+}
+
+button { font-family: inherit; }
+input { font-family: inherit; }
+
+/* ─── Cloud / sky background ───────────────── */
+.sky-bg {
+  background:
+    radial-gradient(ellipse 90% 60% at 15% 20%, rgba(255,255,255,0.7) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 50% at 85% 75%, rgba(255,255,255,0.55) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(125,208,189,0.35) 0%, transparent 60%),
+    linear-gradient(160deg, #C9ECF2 0%, #FFF3D6 60%, #FFE6A8 100%);
+  position: relative;
+  overflow: hidden;
+}
+.sky-bg::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle at 12% 15%, white 0 14px, transparent 16px),
+    radial-gradient(circle at 22% 12%, white 0 18px, transparent 20px),
+    radial-gradient(circle at 30% 18%, white 0 14px, transparent 16px),
+    radial-gradient(circle at 78% 72%, white 0 20px, transparent 22px),
+    radial-gradient(circle at 88% 78%, white 0 16px, transparent 18px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+.sky-bg > * { position: relative; z-index: 1; }
+
+/* ─── Tycoon "wooden plate" card ───────────── */
+.plate {
+  background: linear-gradient(180deg, #FFFCF1 0%, #FFF3D6 100%);
+  border: 3px solid var(--wood-light);
+  border-radius: 28px;
+  box-shadow:
+    inset 0 -6px 0 rgba(198,138,79,0.18),
+    inset 0 2px 0 rgba(255,255,255,0.9),
+    0 8px 0 var(--wood-light),
+    0 14px 30px rgba(142,90,46,0.18);
+}
+.plate-soft {
+  background: #FFFCF1;
+  border: 2.5px solid #F2D9A8;
+  border-radius: 22px;
+  box-shadow: inset 0 -4px 0 rgba(198,138,79,0.10), 0 4px 0 #F2D9A8;
+}
+
+/* ─── Big chunky button (game start style) ── */
+.btn3d {
+  position: relative;
+  border: 3px solid var(--wood-deep);
+  border-radius: 22px;
+  padding: 18px 22px;
+  font-family: 'Jua', sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  background: linear-gradient(180deg, #FFE2A8 0%, #F2C98A 100%);
+  color: var(--ink);
+  box-shadow:
+    inset 0 -6px 0 rgba(142,90,46,0.20),
+    inset 0 3px 0 rgba(255,255,255,0.6),
+    0 6px 0 var(--wood-deep),
+    0 10px 18px rgba(142,90,46,0.22);
+  transition: transform 80ms ease, box-shadow 80ms ease;
+}
+.btn3d:hover { transform: translateY(-2px); }
+.btn3d:active { transform: translateY(4px); box-shadow: inset 0 -2px 0 rgba(142,90,46,0.20), 0 2px 0 var(--wood-deep); }
+.btn3d.green { background: linear-gradient(180deg, #B7E191 0%, #7DB342 100%); border-color: var(--leaf-deep); box-shadow: inset 0 -6px 0 rgba(79,138,46,0.25), inset 0 3px 0 rgba(255,255,255,0.6), 0 6px 0 var(--leaf-deep), 0 10px 18px rgba(79,138,46,0.22); }
+.btn3d.red   { background: linear-gradient(180deg, #F4978E 0%, #E8645A 100%); border-color: var(--berry-deep); box-shadow: inset 0 -6px 0 rgba(184,60,48,0.25), inset 0 3px 0 rgba(255,255,255,0.5), 0 6px 0 var(--berry-deep), 0 10px 18px rgba(184,60,48,0.22); color: white; }
+.btn3d.blue  { background: linear-gradient(180deg, #8ED5F4 0%, #4FB3E8 100%); border-color: var(--ocean-deep); box-shadow: inset 0 -6px 0 rgba(42,122,174,0.25), inset 0 3px 0 rgba(255,255,255,0.6), 0 6px 0 var(--ocean-deep), 0 10px 18px rgba(42,122,174,0.22); color: white; }
+.btn3d.navy  { background: linear-gradient(180deg, #4357A8 0%, #1A237E 100%); border-color: #0E1547; box-shadow: inset 0 -6px 0 rgba(14,21,71,0.40), inset 0 3px 0 rgba(255,255,255,0.25), 0 6px 0 #0E1547, 0 10px 18px rgba(14,21,71,0.30); color: white; }
+.btn3d.muted { background: linear-gradient(180deg, #E8D9BB 0%, #C9B68F 100%); border-color: #8E7350; box-shadow: inset 0 -5px 0 rgba(142,115,80,0.22), inset 0 2px 0 rgba(255,255,255,0.5), 0 5px 0 #8E7350, 0 8px 14px rgba(142,115,80,0.18); color: var(--ink); opacity: 0.85; }
+.btn3d:disabled { cursor: not-allowed; opacity: 0.55; }
+
+/* small pill button */
+.pill {
+  background: white;
+  border: 2.5px solid var(--wood-light);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-family: 'Jua', sans-serif;
+  font-size: 15px;
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 3px 0 var(--wood-light);
+  transition: transform 80ms ease;
+}
+.pill:hover { transform: translateY(-1px); }
+.pill:active { transform: translateY(2px); box-shadow: none; }
+
+/* counter +/- circle */
+.qbtn {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 2.5px solid var(--wood-deep);
+  font-family: 'Jua', sans-serif;
+  font-size: 18px;
+  cursor: pointer;
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFF3D6 100%);
+  color: var(--ink);
+  box-shadow: inset 0 -3px 0 rgba(142,90,46,0.18), 0 3px 0 var(--wood-deep);
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: transform 80ms;
+}
+.qbtn:hover { transform: translateY(-1px); }
+.qbtn:active { transform: translateY(2px); box-shadow: none; }
+.qbtn.plus { background: linear-gradient(180deg, #FFD879 0%, #FFB52E 100%); color: white; border-color: var(--sunny-deep); box-shadow: inset 0 -3px 0 rgba(224,162,26,0.35), 0 3px 0 var(--sunny-deep); }
+.qbtn.minus { background: linear-gradient(180deg, #FFFFFF 0%, #F2E2C2 100%); }
+.qbtn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ─── Sparkle "use resource" cards ─────────── */
+@keyframes sparkle-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 rgba(255,200,61,0.45), inset 0 -4px 0 rgba(0,0,0,0.06), 0 5px 0 var(--card-shadow, #DDB066); }
+  50% { box-shadow: 0 0 26px rgba(255,200,61,0.8), inset 0 -4px 0 rgba(0,0,0,0.06), 0 5px 0 var(--card-shadow, #DDB066); }
+}
+.glint {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.glint::after {
+  content: '';
+  position: absolute;
+  top: -50%; left: -60%;
+  width: 60%; height: 200%;
+  background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.7) 50%, transparent 100%);
+  transform: skewX(-20deg);
+  animation: glint-sweep 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes glint-sweep {
+  0%, 60% { left: -60%; }
+  100% { left: 130%; }
+}
+
+.use-card {
+  border: 3px solid var(--c-border);
+  background: linear-gradient(180deg, var(--c-bg-1) 0%, var(--c-bg-2) 100%);
+  border-radius: 20px;
+  padding: 14px 10px 16px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  box-shadow: inset 0 -5px 0 rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.8), 0 5px 0 var(--c-shadow);
+  transition: transform 80ms;
+  animation: float-y 3s ease-in-out infinite;
+}
+.use-card:hover { transform: translateY(-3px); }
+.use-card:active { transform: translateY(3px); box-shadow: inset 0 -2px 0 rgba(0,0,0,0.06), 0 2px 0 var(--c-shadow); }
+.use-card .big-emoji {
+  font-size: 38px;
+  line-height: 1;
+  display: inline-block;
+  filter: drop-shadow(0 2px 0 rgba(0,0,0,0.08));
+}
+.use-card .label {
+  font-family: 'Jua', sans-serif;
+  font-size: 14px;
+  color: var(--c-ink);
+  margin-top: 6px;
+  font-weight: 400;
+}
+.use-card .effect {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: white;
+  border: 2px solid var(--c-border);
+  font-size: 12px;
+  color: var(--c-ink);
+}
+.use-card .star {
+  position: absolute;
+  font-size: 16px;
+  pointer-events: none;
+  animation: sparkle-rotate 4s linear infinite;
+}
+
+/* ─── Trade panels (in/out) ─────────────────── */
+.trade-panel {
+  border-radius: 22px;
+  padding: 16px 14px;
+  border: 3px solid var(--tp-border);
+  background: linear-gradient(180deg, var(--tp-bg-1), var(--tp-bg-2));
+  box-shadow: inset 0 2px 0 rgba(255,255,255,0.7), inset 0 -3px 0 rgba(0,0,0,0.04);
+}
+.trade-panel.in  { --tp-bg-1: #ECF6FE; --tp-bg-2: var(--in-bg); --tp-border: var(--in-border); }
+.trade-panel.out { --tp-bg-1: #FEF1EE; --tp-bg-2: var(--out-bg); --tp-border: var(--out-border); }
+.trade-row {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  border-radius: 12px;
+}
+.trade-row + .trade-row { border-top: 1.5px dashed rgba(0,0,0,0.08); }
+.trade-row .ic { font-size: 22px; text-align: center; }
+.trade-row .nm { font-size: 14px; font-family: 'Jua'; }
+.trade-input {
+  width: 70px;
+  height: 36px;
+  border-radius: 12px;
+  border: 2px solid var(--tp-border);
+  background: white;
+  text-align: center;
+  font-family: 'Jua';
+  font-size: 16px;
+  color: var(--ink);
+  outline: none;
+}
+.trade-input:focus { border-color: var(--ink); }
+
+/* ─── Resource / facility chip ──────────────── */
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: white;
+  border: 2px solid #F2D9A8;
+  border-radius: 14px;
+  padding: 8px 10px;
+  font-family: 'Jua';
+  font-size: 16px;
+  box-shadow: inset 0 -3px 0 rgba(198,138,79,0.10);
+}
+.chip .ic { font-size: 20px; }
+.chip .num { margin-left: auto; color: var(--wood-deep); font-size: 18px; }
+
+/* ─── Top bar (HUD) ─────────────────────────── */
+.hud {
+  background: linear-gradient(180deg, #FFFCF1 0%, #FFF3D6 100%);
+  border-bottom: 3px solid var(--wood-light);
+  box-shadow: 0 4px 0 var(--wood-light), 0 8px 20px rgba(142,90,46,0.10);
+  position: sticky; top: 0; z-index: 30;
+}
+.coin-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(180deg, #FFF1B4 0%, #FFD371 100%);
+  border: 2.5px solid var(--sunny-deep);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-family: 'Jua';
+  font-size: 18px;
+  color: var(--wood-deep);
+  box-shadow: inset 0 -3px 0 rgba(224,162,26,0.30), 0 3px 0 var(--sunny-deep);
+}
+.heart-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(180deg, #C8EFC0 0%, #8FD082 100%);
+  border: 2.5px solid var(--leaf-deep);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-family: 'Jua';
+  font-size: 18px;
+  color: #2E5C1F;
+  box-shadow: inset 0 -3px 0 rgba(79,138,46,0.30), 0 3px 0 var(--leaf-deep);
+}
+
+/* ─── Speech-bubble banner ──────────────────── */
+.bubble {
+  position: relative;
+  background: white;
+  border: 3px solid var(--wood-light);
+  border-radius: 22px;
+  padding: 14px 18px;
+  box-shadow: 0 5px 0 var(--wood-light);
+}
+.bubble::before {
+  content: '';
+  position: absolute;
+  left: 28px; bottom: -14px;
+  width: 18px; height: 18px;
+  background: white;
+  border-right: 3px solid var(--wood-light);
+  border-bottom: 3px solid var(--wood-light);
+  transform: rotate(45deg);
+}
+
+.banner-event {
+  background: linear-gradient(180deg, #FFF8E0, #FFE9B0);
+  border-color: #F2C260;
+  box-shadow: 0 5px 0 #F2C260;
+}
+.banner-event::before { border-color: #F2C260; background: #FFE9B0; }
+
+.banner-info-blue {
+  background: linear-gradient(180deg, #ECF6FE, var(--in-bg));
+  border-color: var(--in-border);
+  box-shadow: 0 5px 0 var(--in-border);
+}
+.banner-info-blue::before { border-color: var(--in-border); background: var(--in-bg); }
+
+.banner-econ {
+  background: linear-gradient(180deg, #F3EAFB, #E2D3F2);
+  border-color: #C8AEE8;
+  box-shadow: 0 5px 0 #C8AEE8;
+}
+.banner-econ::before { border-color: #C8AEE8; background: #E2D3F2; }
+
+/* ─── Round ribbon ─────────────────────────── */
+.ribbon {
+  display: inline-block;
+  position: relative;
+  padding: 8px 22px;
+  background: linear-gradient(180deg, #FFD879, #FFB52E);
+  color: white;
+  font-family: 'Jua';
+  font-size: 16px;
+  border: 3px solid #B57D14;
+  border-radius: 14px;
+  box-shadow: inset 0 -4px 0 rgba(181,125,20,0.4), 0 4px 0 #B57D14;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 0 rgba(0,0,0,0.15);
+}
+
+/* ─── Title pennant for start screen ───────── */
+.pennant {
+  display: inline-block;
+  position: relative;
+  padding: 14px 36px;
+  background: #FF8C5A;
+  color: white;
+  font-family: 'Jua';
+  font-size: 36px;
+  letter-spacing: 1px;
+  border-radius: 16px;
+  border: 4px solid #B83C30;
+  box-shadow: inset 0 -6px 0 rgba(184,60,48,0.4), inset 0 3px 0 rgba(255,255,255,0.3), 0 8px 0 #B83C30, 0 14px 24px rgba(184,60,48,0.22);
+  text-shadow: 0 3px 0 rgba(184,60,48,0.6);
+}
+.pennant::before, .pennant::after {
+  content: '';
+  position: absolute; top: 50%;
+  width: 14px; height: 14px;
+  background: #FFE45E;
+  border: 3px solid #B83C30;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+.pennant::before { left: -22px; }
+.pennant::after { right: -22px; }
+
+/* ─── Group cards on start ──────────────────── */
+.village-card {
+  position: relative;
+  border-radius: 26px;
+  padding: 22px 14px 18px;
+  text-align: center;
+  cursor: pointer;
+  border: 3.5px solid var(--vc-border);
+  background: linear-gradient(180deg, var(--vc-bg-1), var(--vc-bg-2));
+  box-shadow: inset 0 -6px 0 rgba(0,0,0,0.10), inset 0 3px 0 rgba(255,255,255,0.7), 0 7px 0 var(--vc-border), 0 12px 22px rgba(0,0,0,0.10);
+  transition: transform 100ms;
+}
+.village-card:hover { transform: translateY(-3px); }
+.village-card:active { transform: translateY(4px); box-shadow: inset 0 -3px 0 rgba(0,0,0,0.10), 0 3px 0 var(--vc-border); }
+.village-card.done {
+  background: linear-gradient(180deg, #F4F0E5, #E0D8C5);
+  border-color: #B5A988;
+  box-shadow: inset 0 -4px 0 rgba(0,0,0,0.07), 0 4px 0 #B5A988;
+  cursor: default;
+}
+.village-card .roof {
+  font-size: 56px; line-height: 1;
+  filter: drop-shadow(0 3px 0 rgba(0,0,0,0.12));
+}
+.village-card h3 {
+  font-family: 'Jua';
+  font-size: 22px;
+  margin: 8px 0 4px;
+  color: var(--vc-ink);
+  text-shadow: 0 2px 0 rgba(255,255,255,0.5);
+}
+.village-card .stamp {
+  position: absolute;
+  top: -10px; right: -10px;
+  background: #4F8A2E;
+  color: white;
+  border: 3px solid white;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-family: 'Jua';
+  font-size: 14px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  transform: rotate(8deg);
+}
+.village-card .mini {
+  display: flex; justify-content: center; gap: 8px;
+  margin-top: 8px;
+  font-family: 'Jua';
+  font-size: 14px;
+  color: var(--vc-ink);
+  opacity: 0.85;
+}
+.village-card .mini span {
+  background: rgba(255,255,255,0.6);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+/* group color themes */
+.vc-1 { --vc-bg-1: #FFE3B0; --vc-bg-2: #FFC97A; --vc-border: #C68A4F; --vc-ink: #6B3F18; }
+.vc-2 { --vc-bg-1: #CFEAE0; --vc-bg-2: #8FD0BC; --vc-border: #3E8F76; --vc-ink: #1F4E3D; }
+.vc-3 { --vc-bg-1: #DCE6F8; --vc-bg-2: #A9C0EC; --vc-border: #4F6BA8; --vc-ink: #1F2F5C; }
+.vc-4 { --vc-bg-1: #F8DCEC; --vc-bg-2: #ECA9CD; --vc-border: #B85091; --vc-ink: #5C1F44; }
+
+/* ─── Facility row ──────────────────────────── */
+.fac-row {
+  display: flex; align-items: center;
+  background: linear-gradient(180deg, #FFFCF1, #FFF3D6);
+  border: 2.5px solid #F2D9A8;
+  border-radius: 16px;
+  padding: 10px 12px;
+  gap: 10px;
+}
+.fac-row .ic {
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  background: white;
+  border: 2px solid #F2D9A8;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+}
+.fac-row .nm { font-family: 'Jua'; font-size: 15px; line-height: 1.1; }
+.fac-row .cost {
+  display: inline-block;
+  background: var(--cream-200);
+  border: 1.5px solid var(--sunny-deep);
+  color: var(--wood-deep);
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  margin-top: 2px;
+  font-family: 'Jua';
+}
+.fac-row .ctr { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.fac-row .num { font-family: 'Jua'; font-size: 20px; min-width: 24px; text-align: center; color: var(--wood-deep); }
+
+/* ─── Big settle button ─────────────────────── */
+.settle-btn {
+  width: 100%;
+  background: linear-gradient(180deg, #FFE25E 0%, #FFB52E 100%);
+  border: 4px solid #B57D14;
+  color: #5A3A22;
+  font-family: 'Jua';
+  font-size: 26px;
+  border-radius: 22px;
+  padding: 22px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 0 rgba(255,255,255,0.4);
+  box-shadow: inset 0 -8px 0 rgba(181,125,20,0.4), inset 0 3px 0 rgba(255,255,255,0.5), 0 8px 0 #B57D14, 0 14px 22px rgba(181,125,20,0.25);
+  transition: transform 100ms;
+}
+.settle-btn:hover:not(:disabled) { transform: translateY(-3px); }
+.settle-btn:active:not(:disabled) { transform: translateY(5px); box-shadow: inset 0 -3px 0 rgba(181,125,20,0.4), 0 3px 0 #B57D14; }
+.settle-btn:disabled {
+  background: linear-gradient(180deg, #DCD0B8, #B5A988);
+  border-color: #8E7350;
+  box-shadow: inset 0 -6px 0 rgba(142,115,80,0.30), 0 6px 0 #8E7350;
+  cursor: not-allowed;
+  color: #6E5A40;
+}
+
+/* ─── Modal ────────────────────────────────── */
+.modal-bg {
+  position: fixed; inset: 0;
+  background: rgba(40,20,5,0.55);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.modal {
+  max-width: 380px; width: 100%;
+  background: linear-gradient(180deg, #FFFCF1, #FFF3D6);
+  border: 4px solid var(--wood-light);
+  border-radius: 28px;
+  padding: 28px 24px;
+  text-align: center;
+  box-shadow: inset 0 -6px 0 rgba(198,138,79,0.18), 0 12px 0 var(--wood-light), 0 24px 50px rgba(0,0,0,0.3);
+}
+
+/* ═══════════════════════════════════════════════
+   TEACHER TV — Dark + Neon
+═══════════════════════════════════════════════ */
+.tv-bg {
+  background:
+    radial-gradient(ellipse 80% 50% at 80% 0%, rgba(92,229,229,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 0% 100%, rgba(255,111,216,0.15) 0%, transparent 60%),
+    linear-gradient(160deg, var(--tv-bg-1) 0%, var(--tv-bg-2) 100%);
+  min-height: 100vh;
+  color: white;
+  position: relative;
+}
+.tv-bg::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1.5px);
+  background-size: 24px 24px;
+  opacity: 0.10;
+  pointer-events: none;
+}
+.tv-bg > * { position: relative; }
+
+.neon-title {
+  font-family: 'Jua';
+  font-size: 44px;
+  letter-spacing: 2px;
+  color: var(--neon-yellow);
+  text-shadow: 0 0 10px rgba(255,228,94,0.6), 0 0 20px rgba(255,228,94,0.4), 0 0 38px rgba(255,228,94,0.25);
+}
+.neon-subtle {
+  font-family: 'Jua';
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px rgba(92,229,229,0.5);
+  letter-spacing: 1px;
+}
+
+.tv-card {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 100%);
+  border: 2px solid rgba(255,255,255,0.18);
+  border-radius: 26px;
+  padding: 22px;
+  backdrop-filter: blur(8px);
+}
+.tv-card.done {
+  border-color: rgba(108,255,177,0.7);
+  box-shadow: 0 0 22px rgba(108,255,177,0.35), inset 0 0 18px rgba(108,255,177,0.08);
+}
+.tv-card .group-tag {
+  position: absolute; top: -14px; left: 22px;
+  padding: 5px 16px;
+  border-radius: 12px;
+  font-family: 'Jua';
+  letter-spacing: 1.5px;
+  border: 2px solid white;
+  box-shadow: 0 0 14px var(--gt-glow);
+  background: var(--gt-bg);
+  color: white;
+}
+.tv-1 { --gt-bg: #FF7B5A; --gt-glow: rgba(255,123,90,0.7); }
+.tv-2 { --gt-bg: #5CE5B5; --gt-glow: rgba(92,229,181,0.7); }
+.tv-3 { --gt-bg: #5CB6E5; --gt-glow: rgba(92,182,229,0.7); }
+.tv-4 { --gt-bg: #C77DFF; --gt-glow: rgba(199,125,255,0.7); }
+
+.tv-stat {
+  background: rgba(0,0,0,0.30);
+  border: 1.5px solid rgba(255,255,255,0.18);
+  border-radius: 16px;
+  padding: 10px 14px;
+  text-align: center;
+}
+.tv-stat .lbl { font-size: 12px; color: rgba(255,255,255,0.6); letter-spacing: 1.5px; font-family: 'Jua'; }
+.tv-stat .val { font-family: 'Jua'; font-size: 38px; line-height: 1; margin-top: 2px; }
+
+.tv-resource {
+  background: rgba(0,0,0,0.25);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 8px 4px;
+  text-align: center;
+}
+.tv-resource .ic { font-size: 22px; line-height: 1; }
+.tv-resource .nm { font-family: 'Jua'; font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 2px; }
+.tv-resource .v  { font-family: 'Jua'; font-size: 20px; color: white; margin-top: 2px; line-height: 1; }
+.tv-resource.warn { border-color: rgba(255,107,107,0.6); background: rgba(255,107,107,0.10); }
+.tv-resource.warn .v { color: #FF8888; }
+
+.tv-empty {
+  border: 2px dashed rgba(255,255,255,0.18);
+  border-radius: 26px;
+  background: rgba(255,255,255,0.03);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  gap: 6px;
+  color: rgba(255,255,255,0.4);
+  font-family: 'Jua';
+  letter-spacing: 1.5px;
+  min-height: 240px;
+}
+.tv-empty .e { font-size: 50px; opacity: 0.4; }
+
+/* ═══════════════════════════════════════════════
+   PODIUM — ranking visualisation
+═══════════════════════════════════════════════ */
+.podium-wrap {
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.05));
+  border: 2px solid rgba(255,255,255,0.12);
+  padding: 22px 26px 26px;
+}
+.podium {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 4), 1fr);
+  align-items: end;
+  gap: 14px;
+  min-height: 230px;
+}
+.podium .col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.podium .name {
+  font-family: 'Jua';
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 1px;
+}
+.podium .medal {
+  font-size: 30px;
+  filter: drop-shadow(0 0 10px var(--medal-glow));
+}
+.podium .bar {
+  width: 100%;
+  border-radius: 14px 14px 0 0;
+  position: relative;
+  background: linear-gradient(180deg, var(--c1) 0%, var(--c2) 100%);
+  border: 2px solid var(--cb);
+  border-bottom: none;
+  box-shadow: inset 0 4px 0 rgba(255,255,255,0.20), 0 0 22px var(--cb);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 8px;
+}
+.podium .bar .num {
+  font-family: 'Jua';
+  font-size: 26px;
+  color: white;
+  text-shadow: 0 2px 0 rgba(0,0,0,0.3);
+}
+.podium .step {
+  width: 100%;
+  height: 14px;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,0.10) 0 8px, rgba(0,0,0,0.20) 8px 16px);
+  border-radius: 0 0 6px 6px;
+}
+.gold   { --c1: #FFE066; --c2: #F2A926; --cb: #FFC83D; --medal-glow: rgba(255,200,61,0.7); }
+.silver { --c1: #E2E8F0; --c2: #A0AEC0; --cb: #CBD5E0; --medal-glow: rgba(203,213,224,0.7); }
+.bronze { --c1: #E8B98C; --c2: #B8763E; --cb: #D89B5C; --medal-glow: rgba(216,155,92,0.7); }
+.fourth { --c1: #B388E0; --c2: #7E55C2; --cb: #A07ED4; --medal-glow: rgba(160,126,212,0.7); }
+
+/* ═══════════════════════════════════════════════
+   Misc
+═══════════════════════════════════════════════ */
+.subtle { color: var(--ink-soft); }
+.tag-num {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-family: 'Jua';
+  color: var(--wood-deep);
+}
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-8px); }
+  80% { transform: translateX(8px); }
+}
+/* small-screen tweaks */
+@media (max-width: 520px) {
+  .pennant { font-size: 26px; padding: 10px 24px; }
+  .neon-title { font-size: 28px; }
+}
+
+/* ═══════════════════════════════════════════════
+   TEACHER TV — FULLSCREEN ONE-PAGE LAYOUT
+   Always fits in 100vh at 100% browser zoom (1920x1080).
+   Uses cqh / cqw container queries so font sizes
+   scale with the available space.
+═══════════════════════════════════════════════ */
+.tv-fullscreen {
+  height: 100vh;
+  width: 100vw;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(8px, 1.2vh, 16px) clamp(12px, 1.4vw, 22px);
+  gap: clamp(8px, 1.2vh, 16px);
+  overflow: hidden;
+  container-type: size;
+}
+.tv-header {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tv-btn {
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  color: white;
+  border: 2px solid rgba(255,255,255,0.22);
+  font-family: 'Jua', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 80ms;
+}
+.tv-btn:hover { transform: translateY(-1px); }
+.tv-btn.primary {
+  background: linear-gradient(180deg,#FFE45E,#FFB52E);
+  color: #5A3A22;
+  border-color: #B57D14;
+  box-shadow: 0 0 18px rgba(255,200,61,0.5);
+}
+.tv-btn.ghost {
+  background: white;
+  color: #0E1B3D;
+  border-color: white;
+}
+.tv-btn.danger {
+  background: rgba(255,107,107,0.15);
+  border-color: rgba(255,107,107,0.5);
+  padding: 10px 14px;
+}
+
+.tv-grid {
+  flex: 1 1 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: clamp(10px, 1.6vh, 22px) clamp(10px, 1vw, 18px);
+  margin-top: clamp(4px, 0.6vh, 8px); /* group-tag 카드 내부 배치로 여백 축소 */
+}
+
+.tv-card-big {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
+  border: 2px solid rgba(255,255,255,0.20);
+  border-radius: clamp(14px, 1.6vh, 22px);
+  padding: clamp(12px, 1.8vh, 22px) clamp(14px, 1.4vw, 22px);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  gap: clamp(8px, 1.2vh, 14px);
+  overflow: visible;
+}
+.tv-card-big.done {
+  border-color: rgba(108,255,177,0.7);
+  box-shadow: 0 0 26px rgba(108,255,177,0.30), inset 0 0 22px rgba(108,255,177,0.10);
+}
+.tv-card-big .group-tag {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(11px, 1.4vh, 14px);
+  letter-spacing: 1.2px;
+  border: 2px solid rgba(255,255,255,0.7);
+  box-shadow: 0 0 10px var(--gt-glow);
+  background: var(--gt-bg);
+  color: white;
+  z-index: 2;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: -4px;
+}
+.tv-card-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+  gap: 8px;
+  min-width: 0;
+}
+.tv-card-head h3 {
+  margin: 0;
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(16px, 2.4vh, 24px);
+  color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tv-card-head .trade-tag {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(10px, 1.3vh, 13px);
+  color: var(--neon-cyan);
+  background: rgba(92,229,229,0.14);
+  border: 1.5px solid rgba(92,229,229,0.5);
+  padding: 3px 10px;
+  border-radius: 999px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tv-stats-row {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(8px, 1vw, 14px);
+  margin: 0;
+}
+.tv-stat-big {
+  background: rgba(0,0,0,0.32);
+  border: 2px solid rgba(255,255,255,0.18);
+  border-radius: clamp(10px, 1.4vh, 16px);
+  padding: clamp(6px, 1vh, 12px) clamp(8px, 1vw, 14px);
+  text-align: center;
+  min-width: 0;
+}
+.tv-stat-big .lbl {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(10px, 1.3vh, 13px);
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 1.4px;
+  margin-bottom: 4px;
+}
+.tv-stat-big .val {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(26px, 4.2vh, 44px);
+  line-height: 1;
+}
+
+.tv-resources-big {
+  flex: 1 1 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: clamp(6px, 0.8vw, 10px);
+  margin: 0;
+}
+.tv-resource-big {
+  background: rgba(0,0,0,0.30);
+  border: 2px solid rgba(255,255,255,0.14);
+  border-radius: clamp(8px, 1.2vh, 12px);
+  padding: clamp(6px, 1vh, 10px) 4px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(2px, 0.6vh, 6px);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.tv-resource-big .ic {
+  font-size: clamp(20px, 3.4vh, 34px);
+  line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+}
+.tv-resource-big .v {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(20px, 3.4vh, 34px);
+  color: white;
+  line-height: 1;
+  text-shadow: 0 0 12px rgba(255,255,255,0.25);
+}
+.tv-resource-big .nm {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(9px, 1.2vh, 12px);
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.8px;
+  margin-top: 1px;
+}
+.tv-resource-big.warn {
+  border-color: rgba(255,107,107,0.7);
+  background: rgba(255,107,107,0.12);
+  box-shadow: 0 0 18px rgba(255,107,107,0.25) inset;
+}
+.tv-resource-big.warn .v { color: #FF8888; text-shadow: 0 0 14px rgba(255,107,107,0.6); }
+
+.tv-empty-big {
+  border: 2px dashed rgba(255,255,255,0.18);
+  border-radius: clamp(14px, 1.6vh, 22px);
+  background: rgba(255,255,255,0.03);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  gap: 6px;
+  color: rgba(255,255,255,0.4);
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(14px, 2vh, 20px);
+  letter-spacing: 1.5px;
+  flex: 1 1 0;
+  min-height: 0;
+}
+.tv-empty-big .e { font-size: clamp(36px, 5vh, 56px); opacity: 0.5; }
+
+/* Bottom strip — last flex item, NOT fixed */
+.tv-footer {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: clamp(8px, 0.8vw, 14px);
+  align-items: stretch;
+}
+.tv-footer-q {
+  background: linear-gradient(180deg, rgba(255,228,94,0.12), rgba(255,228,94,0.04));
+  border: 2px solid rgba(255,228,94,0.5);
+  border-radius: clamp(10px, 1.4vh, 14px);
+  padding: clamp(6px, 1vh, 10px) clamp(10px, 1vw, 16px);
+  box-shadow: 0 0 24px rgba(255,228,94,0.15);
+  min-width: 0;
+}
+.tv-footer-q .lbl {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(9px, 1.1vh, 11px);
+  color: var(--neon-yellow);
+  letter-spacing: 2px;
+}
+.tv-footer-q p {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(13px, 1.8vh, 18px);
+  color: white;
+  margin: 2px 0 0;
+  line-height: 1.25;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
+.tv-footer-e {
+  background: rgba(255,167,38,0.10);
+  border: 2px solid rgba(255,169,77,0.5);
+  border-left-width: 5px;
+  border-radius: clamp(10px, 1.4vh, 14px);
+  padding: clamp(6px, 1vh, 10px) clamp(10px, 1vw, 16px);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+}
+.tv-footer-e .ev-name {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(12px, 1.6vh, 15px);
+  color: var(--neon-orange);
+  text-shadow: 0 0 10px rgba(255,169,77,0.5);
+}
+.tv-footer-e .ev-desc {
+  font-family: 'Gaegu', sans-serif;
+  font-size: clamp(11px, 1.4vh, 14px);
+  color: rgba(255,255,255,0.85);
+  margin-top: 1px;
+  line-height: 1.25;
+}
+
+/* group-tag color themes */
+.tv-card-big.tv-1 { --gt-bg: #FF7B5A; --gt-glow: rgba(255,123,90,0.7); }
+.tv-card-big.tv-2 { --gt-bg: #5CE5B5; --gt-glow: rgba(92,229,181,0.7); }
+.tv-card-big.tv-3 { --gt-bg: #5CB6E5; --gt-glow: rgba(92,182,229,0.7); }
+.tv-card-big.tv-4 { --gt-bg: #C77DFF; --gt-glow: rgba(199,125,255,0.7); }
+
+/* Very narrow viewports (rare for classroom TV) — stack vertically */
+@media (max-width: 800px) {
+  .tv-grid { grid-template-columns: 1fr; grid-template-rows: repeat(4, 1fr); }
+}
+
+  
+
+/* ═══════════════════════════════════════════════
+   PERSONAL ROGUELIKE MODE — 30분 성장 챌린지
+════════════════════════════════════════════════ */
+.challenge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px;
+}
+.player-slot {
+  border-radius: 22px;
+  padding: 16px 12px;
+  border: 3px solid #F2D9A8;
+  background: linear-gradient(180deg, #FFFCF1, #FFF3D6);
+  box-shadow: inset 0 -4px 0 rgba(198,138,79,0.12), 0 5px 0 #F2D9A8;
+  cursor: pointer;
+  transition: transform 80ms ease;
+  min-height: 150px;
+}
+.player-slot:hover { transform: translateY(-2px); }
+.player-slot.joined { border-color: #7DB342; box-shadow: inset 0 -4px 0 rgba(79,138,46,0.14), 0 5px 0 #7DB342; }
+.goal-card {
+  border-radius: 18px;
+  background: linear-gradient(180deg, #F3EAFB, #E2D3F2);
+  border: 3px solid #C8AEE8;
+  padding: 14px;
+  box-shadow: inset 0 -4px 0 rgba(128,80,170,0.12);
+}
+.player-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.9fr) minmax(320px, 1.3fr) minmax(260px, 0.9fr);
+  gap: 18px;
+  align-items: start;
+}
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+}
+.action-card {
+  border: 2.5px solid #F2D9A8;
+  border-radius: 18px;
+  background: white;
+  padding: 12px;
+  box-shadow: inset 0 -3px 0 rgba(198,138,79,0.10), 0 3px 0 #F2D9A8;
+  cursor: pointer;
+  text-align: left;
+  color: var(--ink);
+}
+.action-card:hover:not(:disabled) { transform: translateY(-1px); }
+.action-card:disabled { opacity: 0.45; cursor: not-allowed; }
+.progress-track {
+  height: 16px;
+  border-radius: 999px;
+  background: rgba(90,58,34,0.12);
+  overflow: hidden;
+  border: 2px solid rgba(90,58,34,0.10);
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7DB342, #FFC83D);
+  border-radius: 999px;
+  transition: width 180ms ease;
+}
+.timer-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 8px 16px;
+  background: linear-gradient(180deg, #0E1B3D, #1A2B5E);
+  color: white;
+  border: 2px solid rgba(255,255,255,0.3);
+  font-family: 'Jua';
+  font-size: 18px;
+}
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-family: 'Jua';
+  font-size: 12px;
+  background: #FFF3D6;
+  border: 2px solid #F2C98A;
+  color: #5A3A22;
+}
+.status-badge.warn { background: #FBE0DC; border-color: #ED9C92; color: #A6362A; }
+.status-badge.good { background: #DFF5F1; border-color: #7DD0BD; color: #1F5C4F; }
+.teacher-grid-13 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+}
+.teacher-player-card {
+  background: rgba(255,255,255,0.07);
+  border: 2px solid rgba(255,255,255,0.16);
+  border-radius: 18px;
+  padding: 14px;
+  color: white;
+  min-height: 170px;
+}
+.teacher-player-card.done { border-color: rgba(108,255,177,0.70); box-shadow: 0 0 18px rgba(108,255,177,0.22); }
+.teacher-mini-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+.teacher-mini-stat {
+  background: rgba(0,0,0,0.26);
+  border-radius: 10px;
+  padding: 6px 4px;
+  text-align: center;
+  font-family: 'Jua';
+}
+.teacher-mini-stat .lbl { font-size: 10px; opacity: 0.6; }
+.teacher-mini-stat .val { font-size: 18px; margin-top: 2px; }
+
+/* v3: 월 전환 모달 + 학생 화면 압축 */
+.month-modal {
+  max-width: 560px;
+  width: 100%;
+  background: linear-gradient(180deg, #FFFCF1, #FFF3D6);
+  border: 4px solid var(--sunny-deep);
+  border-radius: 30px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: inset 0 -7px 0 rgba(181,125,20,0.18), 0 12px 0 var(--sunny-deep), 0 24px 60px rgba(0,0,0,0.32);
+  animation: pop-month 180ms ease-out;
+}
+@keyframes pop-month {
+  from { transform: scale(0.92) translateY(10px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+.month-modal .big-month {
+  font-family: 'Jua';
+  font-size: clamp(38px, 7vw, 64px);
+  line-height: 1;
+  color: var(--wood-deep);
+  text-shadow: 0 3px 0 rgba(255,255,255,0.8);
+}
+.month-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 16px 0 10px;
+}
+.month-summary-chip {
+  background: white;
+  border: 2px solid #F2D9A8;
+  border-radius: 16px;
+  padding: 10px 6px;
+  font-family: 'Jua';
+  box-shadow: inset 0 -3px 0 rgba(198,138,79,0.10);
+}
+.month-summary-chip .lbl { font-size: 12px; color: var(--ink-soft); }
+.month-summary-chip .val { font-size: 24px; margin-top: 2px; }
+.compact-hero {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.quick-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.quick-stat {
+  border-radius: 16px;
+  background: white;
+  border: 2px solid #F2D9A8;
+  padding: 10px 8px;
+  text-align: center;
+  box-shadow: inset 0 -3px 0 rgba(198,138,79,0.10);
+}
+.quick-stat .lbl { font-family: 'Gaegu'; font-size: 14px; color: var(--ink-soft); }
+.quick-stat .val { font-family: 'Jua'; font-size: 24px; line-height: 1.1; }
+.section-title-compact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+.section-title-compact h3, .section-title-compact h2 { margin: 0; }
+.tip-small {
+  font-family: 'Gaegu';
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+.fac-row.compact {
+  padding: 8px 10px;
+  gap: 8px;
+}
+.fac-row.compact .ic { width: 36px; height: 36px; font-size: 22px; }
+.fac-row.compact .nm { font-size: 15px; }
+.action-card.compact {
+  padding: 10px;
+  text-align: center;
+  min-height: 92px;
+}
+.action-card.compact .act-icon { font-size: 30px; line-height: 1; }
+.action-card.compact .act-title { font-family:'Jua'; font-size:16px; margin-top:4px; }
+.action-card.compact .act-desc { font-family:'Gaegu'; font-size:13px; color:#8A6B4F; margin-top:2px; line-height:1.18; }
+.event-mini {
+  border-radius: 18px;
+  border: 3px solid #F2C260;
+  background: linear-gradient(180deg, #FFF8E0, #FFE9B0);
+  padding: 12px;
+  font-family: 'Gaegu';
+  font-size: 17px;
+  box-shadow: 0 4px 0 #F2C260;
+}
+.log-mini {
+  max-height: 220px;
+  overflow: auto;
+  display: grid;
+  gap: 8px;
+}
+@media (max-width: 720px) {
+  .quick-stat-row, .month-summary-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 980px) {
+  .player-layout { grid-template-columns: 1fr; }
+}
+
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  
+<script>
+/* eslint-disable */
+// ═══════════════════════════════════════════════════════════════
+//   우리 마을 경제 매니저 — 개인 로그라이크 모드 v10
+//   수업용 13명 모드 + 혼자 연습 모드 / 30분 타이머 / 랜덤 목표 / 랜덤 이벤트
+// ═══════════════════════════════════════════════════════════════
+
+var _React = React;
+var useState = _React.useState;
+var useEffect = _React.useEffect;
+var useMemo = _React.useMemo;
+var h = React.createElement;
+
+var FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBRi8c6XhwWqyeZFN7EyFVB5WDn3PG2tPM",
+  authDomain: "village-econmy-manager.firebaseapp.com",
+  databaseURL: "https://village-econmy-manager-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "village-econmy-manager",
+  storageBucket: "village-econmy-manager.firebasestorage.app",
+  messagingSenderId: "990780268455",
+  appId: "1:990780268455:web:4bee541f1548ca8e29a082",
+  measurementId: "G-0TBMN1CV9T"
+};
+
+var DB_PATH = 'village_economy_roguelike_v1';
+var PLAYER_COUNT = 13;
+var PLAY_SECONDS = 30 * 60;
+var MAX_MONTH = 10;
+var BONUS_MAX_MONTH = 12;
+var ACTIONS_PER_MONTH = 5;
+var TIME_MACHINES_PER_GAME = 2;
+var START_COINS = 25;
+var START_HAPPINESS = 60;
+var TEACHER_PASSWORD = '0402';
+
+var FACILITIES = {
+  farm: {
+    icon: '🌾', name: '논', cost: 3, upgradeCost: 4,
+    prod: { rice: 3 }, prod2: { rice: 5 },
+    desc: '쌀 생산. 초반 생존에 유리하지만 행복을 직접 올리지는 않습니다.',
+    short: '쌀 생산'
+  },
+  factory: {
+    icon: '🏭', name: '공장', cost: 5, upgradeCost: 6,
+    prod: { product: 2 }, prod2: { product: 4 },
+    industrialStress: 1,
+    desc: '제품 생산. 코인 확보에 좋지만 매월 행복 부담이 생깁니다.',
+    short: '제품 생산·행복 부담'
+  },
+  power: {
+    icon: '⚡', name: '발전소', cost: 5, upgradeCost: 6,
+    prod: { electricity: 4 }, prod2: { electricity: 6 },
+    industrialStress: 1,
+    desc: '전기 생산. 공장을 안정적으로 돌리지만 행복 부담이 있습니다.',
+    short: '전기 생산·행복 부담'
+  },
+  hospital: {
+    icon: '🏥', name: '병원', cost: 4, upgradeCost: 5,
+    prod: { medical: 2 }, prod2: { medical: 3 },
+    desc: '의료 생산. 전염병 피해를 줄이고 의료 지원으로 행복을 회복합니다.',
+    short: '의료 생산·위기 감소'
+  },
+  school: {
+    icon: '🏫', name: '학교', cost: 4, upgradeCost: 5,
+    prod: {}, prod2: {},
+    desc: '교육 투자 효율 상승. 다음 이벤트 피해를 줄이는 전략 시설입니다.',
+    short: '교육·이벤트 방어'
+  },
+  tourist: {
+    icon: '🎭', name: '관광지', cost: 4, upgradeCost: 5,
+    prod: { culture: 2 }, prod2: { culture: 4 },
+    desc: '문화 생산. 문화 행사와 축제 이벤트에 유리합니다.',
+    short: '문화 생산·축제 보너스'
+  },
+  market: {
+    icon: '🛒', name: '시장', cost: 3, upgradeCost: 4,
+    prod: {}, prod2: {},
+    desc: '시장 거래 비용을 낮추고 판매 효율을 높입니다.',
+    short: '거래 할인·판매 보너스'
+  }
+};
+
+var RESOURCES = {
+  rice: { icon: '🌾', name: '쌀' },
+  electricity: { icon: '⚡', name: '전기' },
+  medical: { icon: '🏥', name: '의료' },
+  culture: { icon: '🎭', name: '문화' },
+  product: { icon: '🏭', name: '제품' }
+};
+
+var PLAYER_GOALS = {
+  happy: {
+    icon: '😊', title: '행복한 마을',
+    condition: '행복도 90 이상',
+    desc: '경제보다 주민 만족을 최우선으로 하는 마을입니다.'
+  },
+  rich: {
+    icon: '💰', title: '부자 마을',
+    condition: '코인 50 이상',
+    desc: '수익 구조를 잘 만들어 재정이 풍부한 마을입니다.'
+  },
+  industry: {
+    icon: '🏭', title: '산업 마을',
+    condition: '제품 15개 이상 + 코인 30 이상',
+    desc: '제품 생산과 판매를 중심으로 성장하는 마을입니다.'
+  },
+  self: {
+    icon: '🌾', title: '자급자족 마을',
+    condition: '쌀 20개 이상 + 쌀 부족 0회',
+    desc: '식량 위기에 흔들리지 않는 안정적인 마을입니다.'
+  },
+  balanced: {
+    icon: '⚖️', title: '균형 발전 마을',
+    condition: '행복 70 이상 + 코인 25 이상 + 모든 자원 3개 이상',
+    desc: '돈, 식량, 복지, 문화가 고르게 발달한 마을입니다.'
+  },
+  safe: {
+    icon: '🏥', title: '안전한 마을',
+    condition: '의료 6 이상 + 행복 75 이상 + 위기 피해 2회 이하',
+    desc: '위기 대응과 주민 안전을 중시하는 마을입니다.'
+  }
+};
+
+var EVENT_DECK = [
+  { id: 'small_support', tier: 'mild', icon: '🎁', name: '작은 지원금', desc: '초기 정착 지원을 받았습니다. 코인 +3',
+    apply: function(p, ctx){ p.coins += 3; ctx.notes.push('코인 +3'); } },
+  { id: 'neighbor_help', tier: 'mild', icon: '🤝', name: '이웃 도움', desc: '이웃 마을에서 남는 쌀을 나눠주었습니다. 쌀 +2',
+    apply: function(p, ctx){ p.resources.rice += 2; ctx.notes.push('쌀 +2'); } },
+  { id: 'resident_request', tier: 'mild', icon: '📢', name: '주민 건의', desc: '주민들이 생활 개선을 요구합니다. 행복 -2',
+    apply: function(p, ctx){ ctx.happinessDelta -= 2; ctx.notes.push('행복 -2'); } },
+  { id: 'drought', tier: 'normal', crisis: true, icon: '🌧️', name: '가뭄 발생', desc: '이번 달 쌀 생산량이 50% 감소합니다.',
+    apply: function(p, ctx){ ctx.riceMultiplier = 0.5; ctx.eventDamage = true; ctx.notes.push('쌀 생산 50% 감소'); } },
+  { id: 'price_up', tier: 'normal', icon: '📈', name: '시장 물가 상승', desc: '이번 달 시장 구매 비용이 1코인 증가합니다.',
+    apply: function(p, ctx){ p.tempMarketFee = 1; ctx.notes.push('다음 구매 비용 +1'); } },
+  { id: 'power_trouble', tier: 'normal', crisis: true, icon: '⚡', name: '전력 불안', desc: '발전소가 없으면 전기 -2, 발전소가 있으면 피해가 없습니다.',
+    apply: function(p, ctx){
+      if ((p.facilities.power || 0) > 0) { ctx.notes.push('발전소 덕분에 피해 없음'); return; }
+      p.resources.electricity = Math.max(0, p.resources.electricity - 2);
+      ctx.happinessDelta -= 3;
+      ctx.eventDamage = true;
+      ctx.notes.push('전기 -2, 행복 -3');
+    } },
+  { id: 'festival', tier: 'normal', icon: '🎭', name: '문화 축제', desc: '관광지가 있으면 행복 +8, 코인 +5. 없으면 행복 +2.',
+    apply: function(p, ctx){
+      var hasTourist = (p.facilities.tourist || 0) > 0;
+      if (hasTourist) { ctx.happinessDelta += 8; p.coins += 5; ctx.notes.push('행복 +8, 코인 +5'); }
+      else { ctx.happinessDelta += 2; ctx.notes.push('행복 +2'); }
+    } },
+  { id: 'quality_cert', tier: 'normal', icon: '🏅', name: '품질 인증', desc: '논이 2개 이상이면 코인 +8, 아니면 코인 +1.',
+    apply: function(p, ctx){
+      if ((p.facilities.farm || 0) >= 2) { p.coins += 8; ctx.notes.push('코인 +8'); }
+      else { p.coins += 1; ctx.notes.push('코인 +1'); }
+    } },
+  { id: 'disease', tier: 'hard', crisis: true, icon: '🦠', name: '전염병 경보', desc: '행복이 감소합니다. 병원이 있으면 피해가 줄어듭니다.',
+    apply: function(p, ctx){
+      var hospital = p.facilities.hospital || 0;
+      var level = p.facilityLevels.hospital || 1;
+      var penalty = hospital > 0 ? (level >= 2 ? 3 : 5) : 10;
+      penalty = applyShield(p, penalty);
+      ctx.happinessDelta -= penalty;
+      ctx.eventDamage = penalty >= 6;
+      ctx.notes.push('행복 -' + penalty);
+    } },
+  { id: 'flood', tier: 'hard', crisis: true, icon: '🌊', name: '홍수 피해', desc: '쌀 3개가 유실됩니다. 쌀이 부족하면 행복도도 하락합니다.',
+    apply: function(p, ctx){
+      var before = p.resources.rice;
+      p.resources.rice = Math.max(0, p.resources.rice - 3);
+      var lost = before - p.resources.rice;
+      if (lost < 3) ctx.happinessDelta -= 4;
+      ctx.eventDamage = true;
+      ctx.notes.push('쌀 -' + lost + (lost < 3 ? ', 행복 -4' : ''));
+    } },
+  { id: 'boom', tier: 'hard', icon: '🛒', name: '시장 활황', desc: '제품을 보유하고 있으면 제품 1개가 자동 판매됩니다.',
+    apply: function(p, ctx){
+      if (p.resources.product > 0) { p.resources.product -= 1; p.coins += 5; p.stats.totalProductSold += 1; ctx.notes.push('제품 -1, 코인 +5'); }
+      else { p.coins += 2; ctx.notes.push('코인 +2'); }
+    } }
+];
+
+function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+function pct(n) { return Math.round(clamp(n, 0, 1.5) * 100); }
+function randItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
+function playerSnapshot(p) {
+  var snap = deepClone(p);
+  delete snap.monthStartSnapshot;
+  return snap;
+}
+function ensureMonthSnapshot(p) {
+  if (!p.monthStartSnapshot) p.monthStartSnapshot = playerSnapshot(p);
+  return p;
+}
+function canUseTimeMachine(p) {
+  return !!p && !p.finished && (p.timeMachinesLeft || 0) > 0 && !!p.monthStartSnapshot;
+}
+function fmtTime(ms) {
+  var sec = Math.max(0, Math.ceil(ms / 1000));
+  var m = String(Math.floor(sec / 60)).padStart(2, '0');
+  var s = String(sec % 60).padStart(2, '0');
+  return m + ':' + s;
+}
+function nowMs() { return Date.now(); }
+
+function assignRandomGoal() {
+  return randItem(Object.keys(PLAYER_GOALS));
+}
+
+function emptyFacilities() {
+  return { farm: 0, factory: 0, power: 0, hospital: 0, school: 0, tourist: 0, market: 0 };
+}
+function emptyResources() {
+  return { rice: 2, electricity: 1, medical: 0, culture: 0, product: 0 };
+}
+function initPlayer(id) {
+  return {
+    id: String(id),
+    name: '',
+    villageName: id + '번 마을',
+    joined: false,
+    goalId: null,
+    month: 1,
+    bonusMode: false,
+    actionsLeft: ACTIONS_PER_MONTH,
+    timeMachinesLeft: TIME_MACHINES_PER_GAME,
+    monthStartSnapshot: null,
+    coins: START_COINS,
+    happiness: START_HAPPINESS,
+    resources: emptyResources(),
+    facilities: emptyFacilities(),
+    facilityLevels: {},
+    stats: {
+      riceShortageCount: 0,
+      electricityShortageCount: 0,
+      eventDamageCount: 0,
+      totalProductSold: 0,
+      totalElectricitySold: 0,
+      totalRiceSold: 0,
+      totalCultureUsed: 0,
+      totalMedicalUsed: 0,
+      totalMonthsProcessed: 0,
+      shield: 0
+    },
+    recentEvent: null,
+    eventHistory: [],
+    log: [],
+    goalProgress: 0,
+    finished: false,
+    finishedAt: null,
+    tempMarketFee: 0
+  };
+}
+function initPlayers() {
+  var players = {};
+  for (var i = 1; i <= PLAYER_COUNT; i++) players[String(i)] = initPlayer(i);
+  return players;
+}
+function initApp() {
+  return {
+    version: 'roguelike_v10_solo_mode',
+    mode: 'personal_roguelike',
+    startedAt: null,
+    running: false,
+    players: initPlayers(),
+    updatedAt: nowMs()
+  };
+}
+function migrateGameState(raw) {
+  if (!raw || raw.mode !== 'personal_roguelike' || !raw.players) return initApp();
+  var base = initApp();
+  var merged = Object.assign({}, base, raw);
+  merged.players = Object.assign({}, base.players, raw.players || {});
+  for (var i = 1; i <= PLAYER_COUNT; i++) {
+    var id = String(i);
+    merged.players[id] = Object.assign({}, initPlayer(i), merged.players[id] || {});
+    merged.players[id].resources = Object.assign({}, emptyResources(), merged.players[id].resources || {});
+    merged.players[id].facilities = Object.assign({}, emptyFacilities(), merged.players[id].facilities || {});
+    merged.players[id].facilityLevels = Object.assign({}, merged.players[id].facilityLevels || {});
+    merged.players[id].stats = Object.assign({}, initPlayer(i).stats, merged.players[id].stats || {});
+  }
+  return merged;
+}
+
+function useFirebase() {
+  var tuple = useState({ db: null, fbReady: false, fbError: null });
+  var state = tuple[0], setState = tuple[1];
+  useEffect(function(){
+    try {
+      if (typeof firebase === 'undefined') throw new Error('Firebase SDK가 로드되지 않았습니다. 인터넷 연결 또는 script 태그를 확인하세요.');
+      if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+      var db = firebase.database();
+      setState({ db: db, fbReady: true, fbError: null });
+    } catch (err) {
+      setState({ db: null, fbReady: false, fbError: err.message || String(err) });
+    }
+  }, []);
+  return state;
+}
+
+function useGameState(db, fbReady) {
+  var tuple = useState(initApp());
+  var gameState = tuple[0], setGameState = tuple[1];
+  var syncTuple = useState(false);
+  var synced = syncTuple[0], setSynced = syncTuple[1];
+
+  useEffect(function(){
+    if (!db || !fbReady) return;
+    var ref = db.ref(DB_PATH);
+    var handler = function(snapshot) {
+      var data = snapshot.val();
+      var migrated = migrateGameState(data);
+      setGameState(migrated);
+      setSynced(true);
+      if (!data || data.mode !== 'personal_roguelike') ref.set(migrated);
+    };
+    ref.on('value', handler, function(err){ console.error(err); });
+    return function(){ ref.off('value', handler); };
+  }, [db, fbReady]);
+
+  function saveState(next) {
+    next = migrateGameState(Object.assign({}, next, { updatedAt: nowMs() }));
+    setGameState(next);
+    if (db && fbReady) db.ref(DB_PATH).set(next);
+  }
+  function resetState() {
+    saveState(initApp());
+  }
+  return { gameState: gameState, saveState: saveState, resetState: resetState, synced: synced };
+}
+
+function getRemainingMs(gameState, tick) {
+  if (!gameState.startedAt) return PLAY_SECONDS * 1000;
+  var elapsed = (tick || nowMs()) - gameState.startedAt;
+  return Math.max(0, PLAY_SECONDS * 1000 - elapsed);
+}
+function isTimeUp(gameState, tick) { return gameState.startedAt && getRemainingMs(gameState, tick) <= 0; }
+function useNow(interval) {
+  var tuple = useState(nowMs());
+  var now = tuple[0], setNow = tuple[1];
+  useEffect(function(){ var t = setInterval(function(){ setNow(nowMs()); }, interval || 1000); return function(){ clearInterval(t); }; }, [interval]);
+  return now;
+}
+
+function countFacilities(p) { return Object.values(p.facilities || {}).reduce(function(a,b){ return a + (b || 0); }, 0); }
+function calculateFoodConsumption(p) {
+  var base = p.month <= 3 ? 2 : (p.month <= 6 ? 3 : 4);
+  var fac = countFacilities(p);
+  var extra = 0;
+  if (fac >= 4) extra += 1;
+  if (fac >= 7) extra += 1;
+  if (fac >= 10) extra += 1;
+  return base + extra;
+}
+function getMarketDiscount(p) {
+  var level = p.facilityLevels.market || 1;
+  if ((p.facilities.market || 0) <= 0) return 0;
+  return level >= 2 ? 2 : 1;
+}
+function getMarketFee(p) { return p.tempMarketFee || 0; }
+function calculateIndustrialStress(p) {
+  var stress = 0;
+  var factories = p.facilities.factory || 0;
+  var powers = p.facilities.power || 0;
+  stress += factories;
+  stress += powers;
+  if (factories >= 3) stress += 3;
+  if (powers >= 2) stress += 2;
+  return stress;
+}
+function applyShield(p, penalty) {
+  var shield = p.stats.shield || 0;
+  if (shield <= 0) return penalty;
+  var reduced = Math.max(0, penalty - 4);
+  p.stats.shield = Math.max(0, shield - 1);
+  return reduced;
+}
+
+function drawRandomEvent(p) {
+  var month = p.month || 1;
+  var available = EVENT_DECK.filter(function(ev){
+    if (month <= 2) return ev.tier === 'mild';
+    if (month >= 7) return ev.tier !== 'mild' || ev.id === 'small_support';
+    return ev.tier === 'normal' || ev.tier === 'mild';
+  });
+  var lastId = p.recentEvent && p.recentEvent.id;
+  var lastWasCrisis = p.recentEvent && p.recentEvent.crisis;
+  available = available.filter(function(ev){
+    if (ev.id === lastId) return false;
+    if (lastWasCrisis && ev.crisis && ev.tier === 'hard') return false;
+    return true;
+  });
+  return deepClone(randItem(available.length ? available : EVENT_DECK));
+}
+
+function addProduction(p, key, amount) {
+  p.resources[key] = Math.max(0, (p.resources[key] || 0) + amount);
+}
+function produceResources(p, ctx) {
+  Object.keys(FACILITIES).forEach(function(fid){
+    if (fid === 'factory') return;
+    var cnt = p.facilities[fid] || 0;
+    if (!cnt) return;
+    var level = p.facilityLevels[fid] || 1;
+    var prod = level >= 2 ? (FACILITIES[fid].prod2 || FACILITIES[fid].prod) : FACILITIES[fid].prod;
+    Object.keys(prod || {}).forEach(function(rid){
+      var amount = prod[rid] * cnt;
+      if (rid === 'rice') amount = Math.floor(amount * (ctx.riceMultiplier || 1));
+      addProduction(p, rid, amount);
+      if (amount) ctx.notes.push(FACILITIES[fid].name + ' 생산: ' + RESOURCES[rid].name + ' +' + amount);
+    });
+  });
+
+  var factories = p.facilities.factory || 0;
+  if (factories > 0) {
+    var level = p.facilityLevels.factory || 1;
+    var productPerFactory = level >= 2 ? 4 : 2;
+    var need = factories;
+    var powered = Math.min(need, p.resources.electricity || 0);
+    p.resources.electricity = Math.max(0, (p.resources.electricity || 0) - powered);
+    if (powered > 0) {
+      var product = powered * productPerFactory;
+      p.resources.product += product;
+      ctx.notes.push('공장 가동: 제품 +' + product + ', 전기 -' + powered);
+    }
+    if (powered < need) {
+      var lack = need - powered;
+      ctx.happinessDelta -= 4 * lack;
+      p.stats.electricityShortageCount += 1;
+      ctx.notes.push('전기 부족: 행복 -' + (4 * lack));
+    }
+  }
+}
+
+function processMonth(original) {
+  var p = deepClone(original);
+  if (p.finished) return p;
+  var maxMonth = p.bonusMode ? BONUS_MAX_MONTH : MAX_MONTH;
+  var ctx = { riceMultiplier: 1, happinessDelta: -2, eventDamage: false, notes: ['기본 생활 불만: 행복 -2'] };
+  p.tempMarketFee = 0;
+
+  var baseIncome = 2;
+  var marketIncome = (p.facilities.market || 0) > 0 ? (p.facilityLevels.market >= 2 ? 2 : 1) : 0;
+  p.coins += baseIncome + marketIncome;
+  ctx.notes.push('기본 세금 +' + baseIncome + '코인' + (marketIncome ? ', 시장 수익 +' + marketIncome + '코인' : ''));
+
+  var event = drawRandomEvent(p);
+  var originalEvent = EVENT_DECK.find(function(ev){ return ev.id === event.id; });
+  if (originalEvent && originalEvent.apply) originalEvent.apply(p, ctx);
+
+  produceResources(p, ctx);
+
+  var foodNeed = calculateFoodConsumption(p);
+  if ((p.resources.rice || 0) >= foodNeed) {
+    p.resources.rice -= foodNeed;
+    ctx.notes.push('쌀 소비 -' + foodNeed + ' / 부족 없음');
+  } else {
+    var shortage = foodNeed - (p.resources.rice || 0);
+    p.resources.rice = 0;
+    p.stats.riceShortageCount += 1;
+    var penalty = shortage === 1 ? 5 : 12;
+    if (shortage >= 3) penalty = 15;
+    ctx.happinessDelta -= penalty;
+    ctx.eventDamage = true;
+    ctx.notes.push('쌀 부족 ' + shortage + '개: 행복 -' + penalty);
+  }
+
+  var stress = calculateIndustrialStress(p);
+  if (stress > 0) {
+    ctx.happinessDelta -= stress;
+    ctx.notes.push('산업 시설 부담: 행복 -' + stress);
+  }
+
+  if (ctx.eventDamage) p.stats.eventDamageCount += 1;
+  p.happiness = clamp((p.happiness || 0) + ctx.happinessDelta, 0, 100);
+
+  if (p.happiness >= 10 && p.happiness <= 29) {
+    p.coins = Math.max(0, p.coins - 2);
+    ctx.notes.push('행복 위기: 코인 -2');
+  }
+
+  p.stats.totalMonthsProcessed += 1;
+  p.recentEvent = {
+    id: event.id,
+    icon: originalEvent ? originalEvent.icon : event.icon,
+    name: originalEvent ? originalEvent.name : event.name,
+    desc: originalEvent ? originalEvent.desc : event.desc,
+    crisis: !!(originalEvent && originalEvent.crisis),
+    notes: ctx.notes,
+    month: p.month
+  };
+  p.eventHistory = (p.eventHistory || []).concat([p.recentEvent]).slice(-6);
+  p.log = (p.log || []).concat([p.month + '개월차: ' + p.recentEvent.name + ' · ' + ctx.notes.join(' / ')]).slice(-8);
+  p.monthStartSnapshot = null;
+
+  if (p.month >= maxMonth) {
+    p.finished = true;
+    p.finishedAt = nowMs();
+    p.actionsLeft = 0;
+  } else {
+    p.month += 1;
+    p.actionsLeft = p.happiness <= 9 ? Math.max(1, ACTIONS_PER_MONTH - 1) : ACTIONS_PER_MONTH;
+  }
+  p.goalProgress = calculateGoalProgress(p);
+  return p;
+}
+
+function calculateGoalProgress(p) {
+  var r = p.resources || emptyResources();
+  var g = p.goalId;
+  if (!g) return 0;
+  var progress = 0;
+  if (g === 'happy') progress = p.happiness / 90;
+  else if (g === 'rich') progress = p.coins / 50;
+  else if (g === 'industry') progress = ((r.product || 0) / 15 + (p.coins || 0) / 30) / 2;
+  else if (g === 'self') progress = ((r.rice || 0) / 20 + Math.max(0, 1 - (p.stats.riceShortageCount || 0) / 2)) / 2;
+  else if (g === 'balanced') progress = ((p.happiness || 0) / 70 + (p.coins || 0) / 25 + Math.min(r.rice || 0, r.electricity || 0, r.medical || 0, r.culture || 0, r.product || 0) / 3) / 3;
+  else if (g === 'safe') progress = ((r.medical || 0) / 6 + (p.happiness || 0) / 75 + Math.max(0, 1 - (p.stats.eventDamageCount || 0) / 3)) / 3;
+  return pct(progress);
+}
+function getGrade(progress) {
+  if (progress >= 100) return 'S';
+  if (progress >= 80) return 'A';
+  if (progress >= 60) return 'B';
+  if (progress >= 40) return 'C';
+  return 'D';
+}
+function getStatusBadges(p) {
+  var badges = [];
+  if (!p.joined) return badges;
+  var foodNeed = calculateFoodConsumption(p);
+  if ((p.resources.rice || 0) < foodNeed) badges.push({ text: '🚨 식량 위기', type: 'warn' });
+  if ((p.happiness || 0) <= 30) badges.push({ text: '😢 행복 위기', type: 'warn' });
+  if ((p.coins || 0) <= 0) badges.push({ text: '💸 재정 위기', type: 'warn' });
+  if ((p.facilities.factory || 0) > 0 && (p.resources.electricity || 0) <= 0) badges.push({ text: '⚡ 전력 부족', type: 'warn' });
+  if ((p.goalProgress || 0) >= 100) badges.push({ text: '🏆 목표 달성', type: 'good' });
+  else if ((p.goalProgress || 0) >= 80) badges.push({ text: '⭐ 목표 임박', type: 'good' });
+  if (badges.length === 0) badges.push({ text: '🙂 안정', type: 'good' });
+  return badges;
+}
+function resultComment(p) {
+  if ((p.goalProgress || 0) >= 100) return '목표를 완전히 달성한 훌륭한 마을입니다!';
+  if (p.coins >= 45 && p.happiness < 45) return '경제 성장은 빠르지만 주민 불만 관리가 필요합니다.';
+  if ((p.resources.rice || 0) >= 20 && p.coins < 15) return '식량은 안정적이지만 성장 투자 여력이 부족합니다.';
+  if (p.happiness >= 80 && p.coins < 15) return '주민 만족도는 높지만 재정 기반이 약합니다.';
+  if (p.stats.eventDamageCount <= 1 && p.month >= 8) return '위기에 강한 안정적인 마을입니다.';
+  return '목표에 맞게 조금 더 균형 있는 선택을 하면 좋아집니다.';
+}
+
+function updatePlayerInState(gameState, playerId, updater) {
+  var next = deepClone(gameState);
+  var p = next.players[String(playerId)];
+  next.players[String(playerId)] = updater(p);
+  next.players[String(playerId)].goalProgress = calculateGoalProgress(next.players[String(playerId)]);
+  return next;
+}
+
+function BadgeList(props) {
+  var badges = props.badges || [];
+  return h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 6 } }, badges.map(function(b, i){
+    return h('span', { key: i, className: 'status-badge ' + (b.type || '') }, b.text);
+  }));
+}
+function ProgressBar(props) {
+  var value = clamp(props.value || 0, 0, 120);
+  return h('div', null,
+    h('div', { style: { display:'flex', justifyContent:'space-between', fontFamily:'Jua', fontSize:14, marginBottom:4 } },
+      h('span', null, props.label || '진행률'), h('span', null, Math.round(value) + '%')),
+    h('div', { className: 'progress-track' }, h('div', { className: 'progress-fill', style: { width: clamp(value, 0, 100) + '%' } }))
+  );
+}
+function ResourceChips(props) {
+  var p = props.player;
+  return h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(100px,1fr))', gap: 8 } },
+    Object.keys(RESOURCES).map(function(rid){
+      return h('div', { className: 'chip', key: rid },
+        h('span', { className: 'ic' }, RESOURCES[rid].icon),
+        h('span', null, RESOURCES[rid].name),
+        h('span', { className: 'num' }, p.resources[rid] || 0)
+      );
+    })
+  );
+}
+function TimerDisplay(props) {
+  var now = useNow(1000);
+  var rem = getRemainingMs(props.gameState, now);
+  return h('span', { className: 'timer-pill' }, '⏱️ ', props.gameState.startedAt ? fmtTime(rem) : '대기중');
+}
+
+function StartScreen(props) {
+  var classroomDisabled = !!props.firebaseError;
+  return h('div', { className: 'sky-bg', style: { minHeight:'100vh', padding: 24, display:'flex', alignItems:'center', justifyContent:'center' } },
+    h('div', { className: 'plate', style: { maxWidth: 920, width:'100%', padding: 34, textAlign:'center' } },
+      h('div', { className: 'pennant', style:{ marginBottom: 24 } }, '30분 성장 챌린지'),
+      h('h1', { style: { fontFamily:'Jua', fontSize: 42, margin:'16px 0 8px' } }, '🏘️ 우리 마을 경제 매니저'),
+      h('p', { style: { fontFamily:'Gaegu', fontSize: 24, lineHeight: 1.45, margin:'0 0 24px', color:'#8A6B4F' } }, '랜덤 목표를 받고, 30분 동안 나만의 마을을 성장시키세요. 쌀은 생존, 행복은 삶의 질, 코인은 성장입니다.'),
+      h('div', { style: { display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap: 16, marginTop: 22 } },
+        h('button', { className:'btn3d green', disabled: classroomDisabled, onClick: function(){ if (!classroomDisabled) props.setMode('select'); } }, '👩‍🎓 수업 모드'),
+        h('button', { className:'btn3d blue', onClick: props.startSolo }, '🏡 혼자 연습'),
+        h('button', { className:'btn3d navy', disabled: classroomDisabled, onClick: function(){ if (!classroomDisabled) props.openTeacher(); } }, '📺 교사용 현황판')
+      ),
+      h('div', { className:'bubble banner-info-blue', style:{ marginTop: 30, textAlign:'left', fontFamily:'Gaegu', fontSize: 19, lineHeight:1.45 } },
+        h('b', null, '수업 모드: '), '교사가 30분 타이머를 시작하면 13명이 동시에 진행합니다.', h('br'),
+        h('b', null, '혼자 연습: '), '번호 선택과 교사용 타이머 없이, 이름 입력 후 30분 타이머가 자동으로 시작됩니다.'),
+      props.firebaseError ? h('div', { className:'bubble banner-event', style:{ marginTop:18, textAlign:'left', fontFamily:'Gaegu', fontSize:18, lineHeight:1.45 } },
+        'Firebase 연결이 되지 않아 수업 모드는 잠시 사용할 수 없습니다. 혼자 연습은 이 브라우저 안에서 바로 할 수 있습니다.') : null
+    )
+  );
+}
+
+function PasswordModal(props) {
+  if (!props.open) return null;
+  return h('div', { className:'modal-bg' },
+    h('div', { className:'modal', style: props.shake ? { animation:'shake 0.45s ease' } : null },
+      h('div', { style:{ fontSize:56 } }, '🔐'),
+      h('h2', { style:{ margin:'6px 0 10px' } }, '교사용 비밀번호'),
+      h('input', {
+        value: props.value,
+        type: 'password',
+        autoFocus: true,
+        onChange: function(e){ props.setValue(e.target.value); },
+        onKeyDown: function(e){ if (e.key === 'Enter') props.submit(); },
+        style:{ width:'100%', border:'3px solid #F2C98A', borderRadius:16, padding:'14px 16px', fontSize:22, textAlign:'center', outline:'none' }
+      }),
+      props.error ? h('p', { style:{ color:'#B83C30', margin:'8px 0 0' } }, '비밀번호가 달라요.') : null,
+      h('div', { style:{ display:'flex', gap:10, marginTop:18 } },
+        h('button', { className:'pill', style:{ flex:1 }, onClick: props.close }, '취소'),
+        h('button', { className:'pill', style:{ flex:1 }, onClick: props.submit }, '입장')
+      )
+    )
+  );
+}
+
+function StudentSelect(props) {
+  var players = props.gameState.players || {};
+  return h('div', { className:'sky-bg', style:{ minHeight:'100vh', padding:20 } },
+    h('div', { className:'hud', style:{ margin:'-20px -20px 22px', padding:'14px 20px', display:'flex', justifyContent:'space-between', alignItems:'center', gap:12, flexWrap:'wrap' } },
+      h('button', { className:'pill', onClick:function(){ props.setMode('start'); } }, '← 처음으로'),
+      h('div', { style:{ fontFamily:'Jua', fontSize:22 } }, '👩‍🎓 내 번호를 선택하세요'),
+      h(TimerDisplay, { gameState: props.gameState })
+    ),
+    h('div', { className:'plate', style:{ maxWidth:1180, margin:'0 auto', padding:24 } },
+      h('div', { className:'challenge-grid' },
+        Array.from({ length: PLAYER_COUNT }, function(_, i){
+          var id = String(i + 1);
+          var p = players[id] || initPlayer(id);
+          var goal = PLAYER_GOALS[p.goalId] || null;
+          return h('div', { key:id, className:'player-slot ' + (p.joined ? 'joined' : ''), onClick:function(){ props.setActivePlayer(id); props.setMode('player'); } },
+            h('div', { style:{ display:'flex', justifyContent:'space-between', alignItems:'center' } },
+              h('b', { style:{ fontSize:20 } }, id + '번'),
+              p.finished ? h('span', { className:'status-badge good' }, '완료') : (p.joined ? h('span', { className:'status-badge' }, p.month + '개월') : h('span', { className:'status-badge' }, '입장 전'))
+            ),
+            h('div', { style:{ fontSize:34, margin:'8px 0 4px' } }, p.joined && goal ? goal.icon : '🏡'),
+            h('div', { style:{ fontFamily:'Jua', fontSize:18, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' } }, p.joined ? p.name : '이름 입력 필요'),
+            h('div', { style:{ fontFamily:'Gaegu', fontSize:16, color:'#8A6B4F', marginTop:4 } }, p.joined && goal ? goal.title : '랜덤 목표 배정'),
+            p.joined ? h(ProgressBar, { value:p.goalProgress || 0, label:'목표' }) : null
+          );
+        })
+      )
+    )
+  );
+}
+
+function JoinPanel(props) {
+  var tuple = useState(props.player.name || '');
+  var name = tuple[0], setName = tuple[1];
+  function join() {
+    var clean = (name || '').trim();
+    if (!clean) return alert('이름을 입력하세요.');
+    var next = updatePlayerInState(props.gameState, props.player.id, function(p){
+      var goalId = assignRandomGoal();
+      p.name = clean;
+      p.villageName = clean + '의 마을';
+      p.joined = true;
+      p.goalId = goalId;
+      p.goalProgress = calculateGoalProgress(p);
+      p.log = ['랜덤 목표 배정: ' + PLAYER_GOALS[goalId].title];
+      return p;
+    });
+    if (props.soloMode && !next.startedAt) {
+      next.startedAt = nowMs();
+      next.running = true;
+      next.soloMode = true;
+    }
+    props.saveState(next);
+  }
+  return h('div', { className:'sky-bg', style:{ minHeight:'100vh', padding:24, display:'flex', alignItems:'center', justifyContent:'center' } },
+    h('div', { className:'plate', style:{ maxWidth:520, width:'100%', padding:28, textAlign:'center' } },
+      h('button', { className:'pill', onClick:function(){ props.setMode(props.soloMode ? 'start' : 'select'); }, style:{ marginBottom:16 } }, props.soloMode ? '← 처음으로' : '← 번호 다시 선택'),
+      h('div', { style:{ fontSize:64 } }, '🏡'),
+      h('h2', { style:{ margin:'8px 0 12px', fontSize:30 } }, props.soloMode ? '혼자 연습 시작' : props.player.id + '번 플레이어 입장'),
+      h('p', { style:{ fontFamily:'Gaegu', fontSize:20, color:'#8A6B4F' } }, props.soloMode ? '이름을 입력하면 랜덤 목표가 배정되고 30분 타이머가 바로 시작됩니다.' : '이름을 입력하면 랜덤 목표가 바로 배정됩니다.'),
+      h('input', {
+        value: name,
+        onChange:function(e){ setName(e.target.value); },
+        onKeyDown:function(e){ if(e.key === 'Enter') join(); },
+        placeholder:'이름 입력',
+        style:{ width:'100%', border:'3px solid #F2C98A', borderRadius:16, padding:'14px 16px', fontSize:22, textAlign:'center', outline:'none', margin:'10px 0 18px' }
+      }),
+      h('button', { className:'btn3d green', onClick: join, style:{ width:'100%' } }, props.soloMode ? '🎯 목표 받고 30분 시작' : '🎯 랜덤 목표 받고 시작')
+    )
+  );
+}
+
+function PlayerView(props) {
+  var now = useNow(1000);
+  var transitionTuple = useState(null);
+  var monthTransition = transitionTuple[0], setMonthTransition = transitionTuple[1];
+  var timeUp = isTimeUp(props.gameState, now);
+  var p = props.gameState.players[String(props.activePlayer)] || initPlayer(props.activePlayer);
+  if (!p.joined) return h(JoinPanel, { player:p, gameState:props.gameState, saveState:props.saveState, setMode:props.setMode, soloMode:props.soloMode });
+  var goal = PLAYER_GOALS[p.goalId];
+  var disabled = timeUp || p.finished || !props.gameState.startedAt;
+
+  function savePlayer(updater) {
+    props.saveState(updatePlayerInState(props.gameState, p.id, updater));
+  }
+  function canAct() { return !disabled && p.actionsLeft > 0; }
+  function buildFacility(fid) {
+    if (!canAct()) return;
+    var fac = FACILITIES[fid];
+    if (p.coins < fac.cost) return alert('코인이 부족합니다.');
+    savePlayer(function(x){
+      x = ensureMonthSnapshot(x);
+      x.coins -= fac.cost;
+      x.facilities[fid] = (x.facilities[fid] || 0) + 1;
+      if (!x.facilityLevels[fid]) x.facilityLevels[fid] = 1;
+      x.actionsLeft -= 1;
+      x.log = (x.log || []).concat(['건설: ' + fac.name + ' -' + fac.cost + '코인']).slice(-8);
+      return x;
+    });
+  }
+  function upgradeFacility(fid) {
+    if (!canAct()) return;
+    var fac = FACILITIES[fid];
+    if ((p.facilities[fid] || 0) <= 0) return alert('먼저 시설을 지어야 합니다.');
+    if ((p.facilityLevels[fid] || 1) >= 2) return alert('이미 2단계입니다.');
+    if (p.coins < fac.upgradeCost) return alert('코인이 부족합니다.');
+    savePlayer(function(x){
+      x = ensureMonthSnapshot(x);
+      x.coins -= fac.upgradeCost;
+      x.facilityLevels[fid] = 2;
+      x.actionsLeft -= 1;
+      x.log = (x.log || []).concat(['전체 강화: ' + fac.name + ' Lv.2']).slice(-8);
+      return x;
+    });
+  }
+  function market(action) {
+    if (!canAct()) return;
+    var discount = getMarketDiscount(p);
+    var fee = getMarketFee(p);
+    var map = {
+      buy_rice: { cost: 3, rid:'rice', amount:4, label:'쌀 구매' },
+      buy_electricity: { cost: 3, rid:'electricity', amount:3, label:'전기 구매' },
+      buy_medical: { cost: 4, rid:'medical', amount:2, label:'의료 구매' },
+      buy_culture: { cost: 4, rid:'culture', amount:2, label:'문화 구매' }
+    };
+    if (action === 'sell_product' || action === 'sell_electricity' || action === 'sell_rice') {
+      var sellMap = {
+        sell_product: { rid:'product', need:1, coin:3, label:'제품 판매', stat:'totalProductSold' },
+        sell_electricity: { rid:'electricity', need:2, coin:3, label:'전기 판매', stat:'totalElectricitySold' },
+        sell_rice: { rid:'rice', need:3, coin:2, label:'쌀 판매', stat:'totalRiceSold' }
+      };
+      var s = sellMap[action];
+      if ((p.resources[s.rid] || 0) < s.need) return alert('판매할 ' + RESOURCES[s.rid].name + '이(가) 부족합니다.');
+      savePlayer(function(x){
+        x = ensureMonthSnapshot(x);
+        var bonus = (x.facilities.market || 0) > 0 ? ((x.facilityLevels.market || 1) >= 2 ? 2 : 1) : 0;
+        x.resources[s.rid] -= s.need;
+        x.coins += s.coin + bonus;
+        x.stats[s.stat] = (x.stats[s.stat] || 0) + 1;
+        x.actionsLeft -= 1;
+        x.log = (x.log || []).concat(['시장: ' + s.label + ' +' + (s.coin + bonus) + '코인']).slice(-8);
+        return x;
+      });
+      return;
+    }
+    var m = map[action];
+    var cost = Math.max(1, m.cost - discount + fee);
+    if (p.coins < cost) return alert('코인이 부족합니다.');
+    savePlayer(function(x){
+      x = ensureMonthSnapshot(x);
+      x.coins -= cost;
+      x.resources[m.rid] += m.amount;
+      x.actionsLeft -= 1;
+      x.log = (x.log || []).concat(['시장: ' + m.label + ' -' + cost + '코인']).slice(-8);
+      x.tempMarketFee = 0;
+      return x;
+    });
+  }
+  function useResource(action) {
+    if (!canAct()) return;
+    if (action === 'medical') {
+      if (p.resources.medical < 1) return alert('의료 자원이 부족합니다.');
+      savePlayer(function(x){ x = ensureMonthSnapshot(x); x.resources.medical -= 1; x.happiness = clamp(x.happiness + 6,0,100); x.actionsLeft -= 1; x.stats.totalMedicalUsed += 1; x.log=(x.log||[]).concat(['의료 지원: 행복 +6']).slice(-8); return x; });
+    } else if (action === 'culture') {
+      if (p.resources.culture < 1 || p.coins < 1) return alert('문화 자원 또는 코인이 부족합니다.');
+      savePlayer(function(x){ x = ensureMonthSnapshot(x); x.resources.culture -= 1; x.coins -= 1; x.happiness = clamp(x.happiness + 8,0,100); x.actionsLeft -= 1; x.stats.totalCultureUsed += 1; x.log=(x.log||[]).concat(['문화 행사: 행복 +8']).slice(-8); return x; });
+    } else if (action === 'education') {
+      if (p.coins < 3) return alert('코인이 부족합니다.');
+      var boost = (p.facilities.school || 0) > 0 ? 7 : 5;
+      savePlayer(function(x){ x = ensureMonthSnapshot(x); x.coins -= 3; x.happiness = clamp(x.happiness + boost,0,100); x.stats.shield = (x.stats.shield || 0) + ((x.facilities.school || 0) > 0 ? 2 : 1); x.actionsLeft -= 1; x.log=(x.log||[]).concat(['교육 투자: 행복 +' + boost + ', 이벤트 피해 감소 준비']).slice(-8); return x; });
+    } else if (action === 'support') {
+      if (p.coins < 4) return alert('코인이 부족합니다.');
+      savePlayer(function(x){ x = ensureMonthSnapshot(x); x.coins -= 4; x.happiness = clamp(x.happiness + 7,0,100); x.actionsLeft -= 1; x.log=(x.log||[]).concat(['생활 지원: 행복 +7']).slice(-8); return x; });
+    } else if (action === 'food') {
+      if (p.resources.rice < 2) return alert('쌀이 부족합니다.');
+      savePlayer(function(x){ x = ensureMonthSnapshot(x); x.resources.rice -= 2; x.happiness = clamp(x.happiness + 4,0,100); x.actionsLeft -= 1; x.log=(x.log||[]).concat(['식량 배급: 행복 +4']).slice(-8); return x; });
+    }
+  }
+  function useTimeMachine() {
+    if (disabled) return;
+    if ((p.timeMachinesLeft || 0) <= 0) return alert('타임머신을 모두 사용했습니다.');
+    if (!p.monthStartSnapshot) return alert('이번 달에 되돌릴 선택이 없습니다.');
+    var ok = confirm(p.month + '개월차의 선택을 시작 상태로 되돌릴까요?\n타임머신은 게임 동안 총 2번만 사용할 수 있습니다.');
+    if (!ok) return;
+    savePlayer(function(x){
+      var restored = deepClone(x.monthStartSnapshot);
+      restored.timeMachinesLeft = Math.max(0, (x.timeMachinesLeft || 0) - 1);
+      restored.monthStartSnapshot = null;
+      restored.goalProgress = calculateGoalProgress(restored);
+      restored.log = (restored.log || []).concat(['⏪ 타임머신 사용: ' + restored.month + '개월차 선택 되돌림 · 남은 횟수 ' + restored.timeMachinesLeft + '회']).slice(-8);
+      return restored;
+    });
+  }
+  function nextMonth() {
+    if (disabled) return;
+    if (p.actionsLeft > 0) {
+      var ok = confirm('행동이 ' + p.actionsLeft + '회 남았습니다. 그래도 이번 달을 마무리할까요?');
+      if (!ok) return;
+    }
+    var beforeMonth = p.month;
+    var beforeHappy = p.happiness;
+    var beforeCoins = p.coins;
+    var nextState = updatePlayerInState(props.gameState, p.id, function(x){ return processMonth(x); });
+    var after = nextState.players[String(p.id)];
+    props.saveState(nextState);
+    setMonthTransition({
+      beforeMonth: beforeMonth,
+      afterMonth: after.month,
+      finished: after.finished,
+      event: after.recentEvent,
+      happinessDelta: (after.happiness || 0) - (beforeHappy || 0),
+      coinDelta: (after.coins || 0) - (beforeCoins || 0),
+      goalProgress: after.goalProgress || 0,
+      happiness: after.happiness || 0,
+      coins: after.coins || 0
+    });
+  }
+  function enterBonus() {
+    savePlayer(function(x){ x.bonusMode = true; x.finished = false; x.finishedAt = null; x.month = MAX_MONTH + 1; x.actionsLeft = ACTIONS_PER_MONTH; x.monthStartSnapshot = null; x.log=(x.log||[]).concat(['보너스 11~12개월 도전 시작']).slice(-8); return x; });
+  }
+
+  return h(React.Fragment, null,
+  h('div', { className:'sky-bg', style:{ minHeight:'100vh', padding:18 } },
+    h('div', { className:'hud', style:{ margin:'-18px -18px 18px', padding:'12px 18px', display:'flex', gap:10, alignItems:'center', justifyContent:'space-between', flexWrap:'wrap' } },
+      h('button', { className:'pill', onClick:function(){ props.setMode(props.soloMode ? 'start' : 'select'); } }, props.soloMode ? '← 처음으로' : '← 번호 선택'),
+      h('div', { style:{ display:'flex', gap:10, alignItems:'center', flexWrap:'wrap' } },
+        h('span', { className:'coin-pill' }, '💰 ', p.coins),
+        h('span', { className:'heart-pill' }, '😊 ', p.happiness),
+        h(TimerDisplay, { gameState: props.gameState })
+      ),
+      h('div', { style:{ fontFamily:'Jua', fontSize:18 } }, p.name + ' · ' + p.month + '개월차 · 행동 ' + p.actionsLeft + '회')
+    ),
+    !props.gameState.startedAt ? h('div', { className:'bubble banner-event', style:{ maxWidth:1100, margin:'0 auto 18px', fontFamily:'Gaegu', fontSize:20 } }, props.soloMode ? '이름을 입력하면 혼자 연습 30분 타이머가 자동으로 시작됩니다.' : '아직 교사가 30분 타이머를 시작하지 않았습니다. 화면은 미리 둘러볼 수 있지만 행동은 시작 후 가능합니다.') : null,
+    timeUp ? h('div', { className:'bubble banner-event', style:{ maxWidth:1100, margin:'0 auto 18px', fontFamily:'Gaegu', fontSize:20 } }, '⏱️ 시간이 종료되었습니다. 현재 상태로 결과를 확인하세요.') : null,
+    h('div', { className:'player-layout', style:{ maxWidth:1320, margin:'0 auto' } },
+      h('section', { className:'plate', style:{ padding:18 } },
+        h('div', { className:'compact-hero' },
+          h('div', { className:'section-title-compact' },
+            h('h2', null, '🎯 목표'),
+            h('span', { className:'status-badge good' }, getGrade(p.goalProgress || 0) + '등급')
+          ),
+          h('div', { className:'goal-card' },
+            h('div', { style:{ display:'flex', gap:12, alignItems:'center' } },
+              h('div', { style:{ fontSize:44, lineHeight:1 } }, goal.icon),
+              h('div', { style:{ minWidth:0 } },
+                h('h3', { style:{ margin:'0 0 3px', fontSize:24 } }, goal.title),
+                h('div', { style:{ fontFamily:'Gaegu', fontSize:16, color:'#5A3A22', lineHeight:1.25 } }, goal.condition)
+              )
+            )
+          ),
+          h(ProgressBar, { value:p.goalProgress || 0, label:'달성률' }),
+          h('div', { className:'quick-stat-row' },
+            h('div', { className:'quick-stat' }, h('div', { className:'lbl' }, '이번 달 식량'), h('div', { className:'val' }, calculateFoodConsumption(p) + '개')),
+            h('div', { className:'quick-stat' }, h('div', { className:'lbl' }, '시설 수'), h('div', { className:'val' }, countFacilities(p))),
+            h('div', { className:'quick-stat' }, h('div', { className:'lbl' }, '행동'), h('div', { className:'val' }, p.actionsLeft + '/' + ACTIONS_PER_MONTH)),
+            h('div', { className:'quick-stat' }, h('div', { className:'lbl' }, '타임머신'), h('div', { className:'val' }, (p.timeMachinesLeft || 0) + '/' + TIME_MACHINES_PER_GAME))
+          ),
+          h(BadgeList, { badges:getStatusBadges(p) })
+        ),
+        h('hr', { style:{ border:'none', borderTop:'2px dashed #F2D9A8', margin:'14px 0' } }),
+        h('div', { className:'section-title-compact' }, h('h3', null, '📦 자원'), h('span', { className:'tip-small' }, '숫자만 빠르게 확인')),
+        h(ResourceChips, { player:p })
+      ),
+      h('section', { className:'plate', style:{ padding:18 } },
+        (p.finished || timeUp) ? h(ResultCard, { player:p, timeUp:timeUp, onBonus: (p.finished && !p.bonusMode && !timeUp) ? enterBonus : null }) : h(GameActions, {
+          player:p, disabled:disabled, canAct:canAct, buildFacility:buildFacility, upgradeFacility:upgradeFacility,
+          market:market, useResource:useResource, nextMonth:nextMonth, useTimeMachine:useTimeMachine, canUseTimeMachine:(!disabled && canUseTimeMachine(p))
+        })
+      ),
+      h('section', { className:'plate', style:{ padding:18 } },
+        h('div', { className:'section-title-compact' },
+          h('h2', null, '📜 기록'),
+          h('span', { className:'tip-small' }, '최근 이벤트만 확인')
+        ),
+        p.recentEvent ? h('div', { className:'event-mini', style:{ marginBottom:14 } },
+          h('div', { style:{ fontFamily:'Jua', fontSize:19 } }, p.recentEvent.icon + ' ' + p.recentEvent.name),
+          h('div', { style:{ marginTop:4 } }, p.recentEvent.desc),
+          h('div', { style:{ marginTop:7, color:'#8A6B4F' } }, (p.recentEvent.notes || []).slice(0,3).join(' · '))
+        ) : h('div', { className:'bubble banner-info-blue', style:{ fontFamily:'Gaegu', fontSize:18, marginBottom:14 } }, '아직 이벤트가 없습니다.'),
+        h('div', { className:'log-mini' }, (p.log || []).slice().reverse().slice(0,5).map(function(line, i){
+          return h('div', { key:i, className:'plate-soft', style:{ padding:9, fontFamily:'Gaegu', fontSize:15 } }, line);
+        }))
+      )
+    )
+  ),
+  h(MonthTransitionModal, { data:monthTransition, onClose:function(){ setMonthTransition(null); } })
+  );
+}
+
+function GameActions(props) {
+  var p = props.player;
+  return h('div', null,
+    h('div', { className:'section-title-compact' },
+      h('h2', null, '🕹️ 이번 달 행동'),
+      h('span', { className:'status-badge' }, '남은 행동 ' + p.actionsLeft + '회')
+    ),
+    h('div', { className:'bubble banner-info-blue', style:{ fontFamily:'Gaegu', fontSize:16, margin:'0 0 12px', padding:'10px 14px' } },
+      '버튼 1번 = 행동 1회 · 월 5회까지 사용 후 ', h('b', null, '이번 달 마무리'), '를 누르면 기본 세금, 이벤트, 생산·소비가 정산됩니다.'
+    ),
+    h('div', { className:'plate-soft', style:{ padding:10, margin:'0 0 12px', display:'flex', justifyContent:'space-between', alignItems:'center', gap:10, flexWrap:'wrap' } },
+      h('div', null,
+        h('div', { style:{ fontFamily:'Jua', fontSize:17 } }, '⏪ 타임머신'),
+        h('div', { style:{ fontFamily:'Gaegu', fontSize:14, color:'#8A6B4F' } }, '이번 달 선택을 시작 상태로 되돌리기')
+      ),
+      h('div', { style:{ display:'flex', alignItems:'center', gap:8 } },
+        h('span', { className:'status-badge' }, '남은 ' + (p.timeMachinesLeft || 0) + '/' + TIME_MACHINES_PER_GAME),
+        h('button', { className:'pill', disabled:!props.canUseTimeMachine, onClick:props.useTimeMachine }, props.canUseTimeMachine ? '되돌리기' : '대기')
+      )
+    ),
+    h('div', { className:'section-title-compact', style:{ marginTop:10 } },
+      h('h3', null, '🏗️ 건설 / 강화'),
+      h('span', { className:'tip-small' }, '+ 건설 · ↑ 전체 강화')
+    ),
+    h('div', { style:{ display:'grid', gap:8 } }, Object.keys(FACILITIES).map(function(fid){
+      var fac = FACILITIES[fid];
+      var cnt = p.facilities[fid] || 0;
+      var level = p.facilityLevels[fid] || 1;
+      return h('div', { key:fid, className:'fac-row compact' },
+        h('div', { className:'ic' }, fac.icon),
+        h('div', { style:{ minWidth:0, flex:1 } },
+          h('div', { className:'nm' }, fac.name + ' x' + cnt + ' · Lv.' + level),
+          h('div', { className:'cost' }, '건설 ' + fac.cost + ' / 강화 ' + fac.upgradeCost),
+          h('div', { style:{ fontFamily:'Gaegu', fontSize:13, color:'#8A6B4F', marginTop:2, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' } }, fac.short || fac.desc)
+        ),
+        h('div', { className:'ctr' },
+          h('button', { title:'건설', className:'qbtn plus', disabled:!props.canAct(), onClick:function(){ props.buildFacility(fid); } }, '+'),
+          h('button', { title:'전체 강화', className:'qbtn', disabled:!props.canAct() || cnt <= 0 || level >= 2, onClick:function(){ props.upgradeFacility(fid); } }, '↑')
+        )
+      );
+    })),
+    h('div', { className:'section-title-compact', style:{ marginTop:16 } },
+      h('h3', null, '🛒 시장'),
+      h('span', { className:'tip-small' }, '구매보다 판매가 코인 수급 핵심')
+    ),
+    h('div', { className:'action-grid' },
+      h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'🌾', title:'쌀 구매', desc:'-3코인 · +4', onClick:function(){ props.market('buy_rice'); } }),
+      h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'⚡', title:'전기 구매', desc:'-3코인 · +3', onClick:function(){ props.market('buy_electricity'); } }),
+      h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'🏥', title:'의료 구매', desc:'-4코인 · +2', onClick:function(){ props.market('buy_medical'); } }),
+      h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'🎭', title:'문화 구매', desc:'-4코인 · +2', onClick:function(){ props.market('buy_culture'); } }),
+      h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'🏭', title:'제품 판매', desc:'제품-1 · +3', onClick:function(){ props.market('sell_product'); } }),
+      h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'⚡', title:'전기 판매', desc:'전기-2 · +3', onClick:function(){ props.market('sell_electricity'); } }),
+      h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'🌾', title:'쌀 판매', desc:'쌀-3 · +2', onClick:function(){ props.market('sell_rice'); } })
+    ),
+    h('div', { className:'section-title-compact', style:{ marginTop:16 } },
+      h('h3', null, '😊 행복'),
+      h('span', { className:'tip-small' }, '낮으면 불이익')
+    ),
+    h('div', { className:'action-grid' },
+      h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'🏥', title:'의료지원', desc:'의료-1 · 행복+6', onClick:function(){ props.useResource('medical'); } }),
+      h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'🎭', title:'문화행사', desc:'문화-1 · 행복+8', onClick:function(){ props.useResource('culture'); } }),
+      h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'🏫', title:'교육투자', desc:'코인-3 · 방어', onClick:function(){ props.useResource('education'); } }),
+      h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'🛒', title:'생활지원', desc:'코인-4 · 행복+7', onClick:function(){ props.useResource('support'); } }),
+      h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'🌾', title:'식량배급', desc:'쌀-2 · 행복+4', onClick:function(){ props.useResource('food'); } })
+    ),
+    h('button', { className:'settle-btn', disabled:props.disabled, onClick:props.nextMonth, style:{ marginTop:18 } }, '🌙 이번 달 마무리하기')
+  );
+}
+function ActionButton(props) {
+  return h('button', { className:'action-card ' + (props.compact ? 'compact' : ''), disabled:props.disabled, onClick:props.onClick },
+    h('div', { className:'act-icon', style:props.compact ? null : { fontSize:28 } }, props.icon),
+    h('div', { className:'act-title', style:props.compact ? null : { fontFamily:'Jua', fontSize:17, margin:'3px 0' } }, props.title),
+    h('div', { className:'act-desc', style:props.compact ? null : { fontFamily:'Gaegu', fontSize:15, color:'#8A6B4F', lineHeight:1.25 } }, props.desc)
+  );
+}
+function MonthTransitionModal(props) {
+  var data = props.data;
+  if (!data) return null;
+  var ev = data.event || {};
+  var nextLabel = data.finished ? '최종 결과로 이동!' : data.afterMonth + '개월차 시작!';
+  var happyText = (data.happinessDelta || 0) >= 0 ? '+' + (data.happinessDelta || 0) : String(data.happinessDelta || 0);
+  var coinText = (data.coinDelta || 0) >= 0 ? '+' + (data.coinDelta || 0) : String(data.coinDelta || 0);
+  return h('div', { className:'modal-bg' },
+    h('div', { className:'month-modal' },
+      h('div', { style:{ fontSize:54, lineHeight:1 } }, data.finished ? '🏁' : '🌙'),
+      h('div', { className:'big-month' }, nextLabel),
+      h('p', { style:{ fontFamily:'Gaegu', fontSize:20, margin:'10px 0 14px', color:'#8A6B4F' } },
+        data.beforeMonth + '개월차 정산이 끝났습니다.'
+      ),
+      h('div', { className:'event-mini', style:{ textAlign:'left' } },
+        h('div', { style:{ fontFamily:'Jua', fontSize:22 } }, (ev.icon || '🎲') + ' ' + (ev.name || '이번 달 사건')),
+        h('div', { style:{ marginTop:4 } }, ev.desc || '이번 달 변화가 적용되었습니다.'),
+        ev.notes && ev.notes.length ? h('div', { style:{ marginTop:7, color:'#8A6B4F' } }, ev.notes.slice(0,3).join(' · ')) : null
+      ),
+      h('div', { className:'month-summary-grid' },
+        h('div', { className:'month-summary-chip' }, h('div', { className:'lbl' }, '행복 변화'), h('div', { className:'val' }, happyText)),
+        h('div', { className:'month-summary-chip' }, h('div', { className:'lbl' }, '코인 변화'), h('div', { className:'val' }, coinText)),
+        h('div', { className:'month-summary-chip' }, h('div', { className:'lbl' }, '목표 달성률'), h('div', { className:'val' }, data.goalProgress + '%'))
+      ),
+      h('button', { className:'btn3d green', onClick:props.onClose, style:{ width:'100%', marginTop:10 } }, data.finished ? '📊 결과 확인하기' : '🚀 ' + data.afterMonth + '개월차 시작')
+    )
+  );
+}
+function ResultCard(props) {
+  var p = props.player;
+  var goal = PLAYER_GOALS[p.goalId];
+  var grade = getGrade(p.goalProgress || 0);
+  var totalResources = Object.values(p.resources || {}).reduce(function(a,b){ return a + (b || 0); }, 0);
+  return h('div', { style:{ textAlign:'center' } },
+    h('div', { style:{ fontSize:70 } }, grade === 'S' ? '🏆' : '📊'),
+    h('h2', { style:{ margin:'0 0 8px', fontSize:32 } }, '마을 결과 카드'),
+    h('div', { className:'goal-card', style:{ margin:'0 auto 14px', maxWidth:480 } },
+      h('div', { style:{ fontSize:42 } }, goal.icon),
+      h('h3', { style:{ margin:'4px 0' } }, goal.title),
+      h(ProgressBar, { value:p.goalProgress || 0, label:'최종 목표 달성률' })
+    ),
+    h('div', { style:{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(120px,1fr))', gap:10, margin:'16px 0' } },
+      h(ResultStat, { label:'등급', value:grade }),
+      h(ResultStat, { label:'행복도', value:p.happiness }),
+      h(ResultStat, { label:'코인', value:p.coins }),
+      h(ResultStat, { label:'자원 합계', value:totalResources }),
+      h(ResultStat, { label:'쌀 부족', value:(p.stats.riceShortageCount || 0) + '회' }),
+      h(ResultStat, { label:'위기 피해', value:(p.stats.eventDamageCount || 0) + '회' })
+    ),
+    h('div', { className:'bubble banner-info-blue', style:{ fontFamily:'Gaegu', fontSize:20, textAlign:'left', marginTop:16 } }, resultComment(p)),
+    props.onBonus ? h('button', { className:'btn3d blue', onClick:props.onBonus, style:{ width:'100%', marginTop:18 } }, '✨ 보너스 11~12개월 도전') : null,
+    props.timeUp ? h('p', { style:{ fontFamily:'Gaegu', fontSize:18, color:'#8A6B4F' } }, '제한 시간이 끝나 현재 상태로 결과가 확정되었습니다.') : null
+  );
+}
+function ResultStat(props) {
+  return h('div', { className:'plate-soft', style:{ padding:12 } },
+    h('div', { style:{ fontFamily:'Gaegu', color:'#8A6B4F', fontSize:15 } }, props.label),
+    h('div', { style:{ fontFamily:'Jua', fontSize:28 } }, props.value)
+  );
+}
+
+function TeacherDashboard(props) {
+  var now = useNow(1000);
+  var players = props.gameState.players || {};
+  var list = Object.keys(players).sort(function(a,b){ return Number(a)-Number(b); }).map(function(id){ return players[id]; });
+  var joined = list.filter(function(p){ return p.joined; });
+  var avgProgress = joined.length ? Math.round(joined.reduce(function(s,p){ return s + (p.goalProgress || 0); },0) / joined.length) : 0;
+  var avgHappy = joined.length ? Math.round(joined.reduce(function(s,p){ return s + (p.happiness || 0); },0) / joined.length) : 0;
+  var doneCount = joined.filter(function(p){ return (p.goalProgress || 0) >= 100 || p.finished; }).length;
+  var rankings = joined.slice().sort(function(a,b){ return (b.goalProgress||0) - (a.goalProgress||0); }).slice(0,3);
+
+  function startTimer() {
+    props.saveState(Object.assign({}, props.gameState, { startedAt: nowMs(), running: true }));
+  }
+  function resetAll() {
+    if (confirm('모든 학생 기록을 초기화할까요?')) props.resetState();
+  }
+
+  return h('div', { className:'tv-bg', style:{ minHeight:'100vh', padding:18 } },
+    h('div', { style:{ display:'flex', justifyContent:'space-between', alignItems:'center', gap:12, flexWrap:'wrap', marginBottom:16 } },
+      h('div', null,
+        h('div', { className:'neon-title', style:{ fontSize:34 } }, '📺 30분 성장 챌린지 현황판'),
+        h('div', { className:'neon-subtle' }, '개인별 랜덤 목표 · 랜덤 이벤트 · 목표 달성률 중심')
+      ),
+      h('div', { style:{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' } },
+        h('button', { className:'tv-btn ghost', onClick:function(){ props.setMode('start'); } }, '처음으로'),
+        h('button', { className:'tv-btn primary', onClick:startTimer }, props.gameState.startedAt ? '타이머 재시작' : '30분 시작'),
+        h('button', { className:'tv-btn danger', onClick:resetAll }, '전체 초기화')
+      )
+    ),
+    h('div', { style:{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(170px,1fr))', gap:12, marginBottom:14 } },
+      h(TeacherTopStat, { label:'남은 시간', value:props.gameState.startedAt ? fmtTime(getRemainingMs(props.gameState, now)) : '대기중' }),
+      h(TeacherTopStat, { label:'참가자', value:joined.length + '/' + PLAYER_COUNT }),
+      h(TeacherTopStat, { label:'평균 달성률', value:avgProgress + '%' }),
+      h(TeacherTopStat, { label:'평균 행복도', value:avgHappy }),
+      h(TeacherTopStat, { label:'완료/달성', value:doneCount + '명' })
+    ),
+    h('div', { className:'podium-wrap', style:{ marginBottom:14 } },
+      h('div', { className:'neon-subtle', style:{ marginBottom:8 } }, '🏆 목표 달성률 TOP 3'),
+      rankings.length ? h('div', { style:{ display:'flex', gap:10, flexWrap:'wrap' } }, rankings.map(function(p,i){
+        return h('div', { key:p.id, className:'tv-stat', style:{ minWidth:150, flex:'1 1 150px' } },
+          h('div', { className:'lbl' }, (i+1) + '위 · ' + (PLAYER_GOALS[p.goalId] ? PLAYER_GOALS[p.goalId].title : '목표 없음')),
+          h('div', { className:'val' }, (p.goalProgress || 0) + '%'),
+          h('div', { style:{ fontFamily:'Jua', marginTop:5 } }, p.name)
+        );
+      })) : h('div', { style:{ color:'rgba(255,255,255,0.55)', fontFamily:'Jua' } }, '아직 참가자가 없습니다.')
+    ),
+    h('div', { className:'teacher-grid-13' }, list.map(function(p){ return h(TeacherPlayerCard, { key:p.id, player:p }); }))
+  );
+}
+function TeacherTopStat(props) {
+  return h('div', { className:'tv-stat' }, h('div', { className:'lbl' }, props.label), h('div', { className:'val' }, props.value));
+}
+function TeacherPlayerCard(props) {
+  var p = props.player;
+  var goal = PLAYER_GOALS[p.goalId];
+  if (!p.joined) {
+    return h('div', { className:'teacher-player-card' },
+      h('div', { style:{ fontFamily:'Jua', fontSize:20 } }, p.id + '번'),
+      h('div', { style:{ marginTop:34, textAlign:'center', opacity:0.45, fontFamily:'Jua' } }, h('div', { style:{ fontSize:44 } }, '🏡'), '입장 전')
+    );
+  }
+  return h('div', { className:'teacher-player-card ' + (p.finished || (p.goalProgress||0)>=100 ? 'done' : '') },
+    h('div', { style:{ display:'flex', justifyContent:'space-between', gap:8, alignItems:'start' } },
+      h('div', { style:{ minWidth:0 } },
+        h('div', { style:{ fontFamily:'Jua', fontSize:20, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' } }, p.id + '번 · ' + p.name),
+        h('div', { style:{ fontFamily:'Jua', color:'var(--neon-cyan)', fontSize:13, marginTop:3 } }, goal ? goal.icon + ' ' + goal.title : '목표 없음')
+      ),
+      h('span', { className:'status-badge ' + ((p.goalProgress||0)>=100 ? 'good' : '') }, p.month + '개월')
+    ),
+    h('div', { style:{ marginTop:10 } }, h(ProgressBar, { value:p.goalProgress || 0, label:'달성률' })),
+    h('div', { className:'teacher-mini-row' },
+      h('div', { className:'teacher-mini-stat' }, h('div', { className:'lbl' }, '행복'), h('div', { className:'val' }, p.happiness)),
+      h('div', { className:'teacher-mini-stat' }, h('div', { className:'lbl' }, '코인'), h('div', { className:'val' }, p.coins)),
+      h('div', { className:'teacher-mini-stat' }, h('div', { className:'lbl' }, '행동'), h('div', { className:'val' }, p.actionsLeft))
+    ),
+    h('div', { style:{ marginTop:9 } }, h(BadgeList, { badges:getStatusBadges(p).slice(0,2) })),
+    h('div', { style:{ marginTop:9, fontFamily:'Gaegu', fontSize:14, color:'rgba(255,255,255,0.78)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' } },
+      p.recentEvent ? '최근: ' + p.recentEvent.icon + ' ' + p.recentEvent.name : '최근 이벤트 없음')
+  );
+}
+
+function ErrorScreen(props) {
+  return h('div', { style:{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', background:'#FFF8E7', padding:24 } },
+    h('div', { style:{ maxWidth:560, textAlign:'center', background:'white', borderRadius:24, padding:36, border:'3px solid #F2C98A', boxShadow:'0 8px 0 #F2C98A' } },
+      h('div', { style:{ fontSize:64, marginBottom:12 } }, '🔥'),
+      h('h2', { style:{ fontFamily:'Jua', color:'#B83C30', margin:'0 0 12px' } }, 'Firebase 연결 오류'),
+      h('p', { style:{ fontFamily:'Gaegu', fontSize:18, color:'#5A3A22', lineHeight:1.6, margin:'0 0 18px' } }, props.message),
+      h('p', { style:{ fontFamily:'Gaegu', fontSize:16, color:'#8A6B4F' } }, '인터넷 연결, Firebase 프로젝트, Realtime Database 보안 규칙을 확인하세요.')
+    )
+  );
+}
+
+function App() {
+  var fb = useFirebase();
+  var gs = useGameState(fb.db, fb.fbReady);
+  var modeTuple = useState('start');
+  var mode = modeTuple[0], setMode = modeTuple[1];
+  var playerTuple = useState(null);
+  var activePlayer = playerTuple[0], setActivePlayer = playerTuple[1];
+  var soloTuple = useState(null);
+  var soloState = soloTuple[0], setSoloState = soloTuple[1];
+  var pwOpenTuple = useState(false);
+  var showPwModal = pwOpenTuple[0], setShowPwModal = pwOpenTuple[1];
+  var pwTuple = useState('');
+  var pwValue = pwTuple[0], setPwValue = pwTuple[1];
+  var errTuple = useState(false);
+  var pwError = errTuple[0], setPwError = errTuple[1];
+  var shakeTuple = useState(false);
+  var pwShake = shakeTuple[0], setPwShake = shakeTuple[1];
+
+  function openTeacher(){ setPwValue(''); setPwError(false); setPwShake(false); setShowPwModal(true); }
+  function submitPw(){
+    if (pwValue === TEACHER_PASSWORD) { setShowPwModal(false); setMode('teacher'); }
+    else { setPwError(true); setPwShake(true); setPwValue(''); setTimeout(function(){ setPwShake(false); setPwError(false); }, 700); }
+  }
+  function makeSoloState() {
+    var s = initApp();
+    s.version = 'roguelike_v10_solo_mode';
+    s.soloMode = true;
+    s.startedAt = null;
+    s.running = false;
+    return s;
+  }
+  function startSolo() {
+    setSoloState(makeSoloState());
+    setActivePlayer('1');
+    setMode('solo');
+  }
+  function saveSoloState(next) {
+    next = migrateGameState(Object.assign({}, next, { updatedAt: nowMs(), soloMode: true, version: 'roguelike_v10_solo_mode' }));
+    setSoloState(next);
+  }
+
+  if (fb.fbError && mode !== 'start' && mode !== 'solo') return h(ErrorScreen, { message: fb.fbError });
+  if (!fb.fbError && !gs.synced && mode !== 'solo') {
+    return h('div', { className:'sky-bg', style:{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' } },
+      h('div', { className:'plate', style:{ padding:32, textAlign:'center' } }, h('div', { style:{ fontSize:60 } }, '⏳'), h('h2', null, '데이터 불러오는 중...'))
+    );
+  }
+
+  return h(React.Fragment, null,
+    mode === 'start' ? h(StartScreen, { setMode:setMode, openTeacher:openTeacher, startSolo:startSolo, firebaseError:fb.fbError }) : null,
+    mode === 'select' ? h(StudentSelect, { gameState:gs.gameState, setMode:setMode, setActivePlayer:setActivePlayer }) : null,
+    mode === 'player' ? h(PlayerView, { gameState:gs.gameState, saveState:gs.saveState, setMode:setMode, activePlayer:activePlayer || '1', soloMode:false }) : null,
+    mode === 'solo' ? h(PlayerView, { gameState:soloState || makeSoloState(), saveState:saveSoloState, setMode:setMode, activePlayer:'1', soloMode:true }) : null,
+    mode === 'teacher' ? h(TeacherDashboard, { gameState:gs.gameState, saveState:gs.saveState, resetState:gs.resetState, setMode:setMode }) : null,
+    h(PasswordModal, { open:showPwModal, value:pwValue, setValue:setPwValue, submit:submitPw, close:function(){ setShowPwModal(false); }, error:pwError, shake:pwShake })
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>
