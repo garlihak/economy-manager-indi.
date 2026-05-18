@@ -1268,6 +1268,185 @@ input { font-family: inherit; }
   display: grid;
   gap: 8px;
 }
+
+/* v14: 게임 규칙서 팝업 + 고정 버튼 */
+.rule-float {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 850;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 3px solid var(--wood-deep);
+  border-radius: 999px;
+  padding: 11px 16px;
+  background: linear-gradient(180deg, #FFF8E7, #FFE6A8);
+  color: var(--ink);
+  font-family: 'Jua', sans-serif;
+  font-size: 17px;
+  cursor: pointer;
+  box-shadow: inset 0 -4px 0 rgba(142,90,46,0.18), 0 5px 0 var(--wood-deep), 0 10px 22px rgba(90,58,34,0.22);
+}
+.rule-float:hover { transform: translateY(-2px); }
+.rule-float:active { transform: translateY(3px); box-shadow: inset 0 -2px 0 rgba(142,90,46,0.18), 0 2px 0 var(--wood-deep); }
+.rule-float .book-emoji { font-size: 24px; line-height: 1; }
+.rulebook-backdrop { padding: 16px; }
+.rule-book {
+  width: min(980px, 96vw);
+  max-height: 94vh;
+  overflow: auto;
+  border-radius: 28px;
+  border: 5px solid var(--wood-deep);
+  background: linear-gradient(90deg, #8E5A2E 0 2.2%, #FFF8E7 2.2% 49.4%, #F2C98A 49.4% 50.6%, #FFF8E7 50.6% 97.8%, #8E5A2E 97.8% 100%);
+  box-shadow: inset 0 -8px 0 rgba(142,90,46,0.18), 0 16px 0 #6B3F18, 0 28px 70px rgba(0,0,0,0.38);
+  animation: pop-month 160ms ease-out;
+}
+.rule-book-cover {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 22px;
+  background: linear-gradient(180deg, #C68A4F, #8E5A2E);
+  color: white;
+  border-bottom: 4px solid #6B3F18;
+}
+.rule-book-title {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(22px, 3.2vw, 34px);
+  letter-spacing: 1px;
+  text-shadow: 0 3px 0 rgba(0,0,0,0.25);
+}
+.rule-close {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 3px solid white;
+  background: #E8645A;
+  color: white;
+  font-family: 'Jua', sans-serif;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #B83C30;
+}
+.rule-book-pages {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  padding: 26px 34px 18px;
+}
+.rule-page {
+  min-height: 520px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.76);
+  border: 2px dashed #E8C986;
+  padding: 18px;
+  box-shadow: inset 0 0 18px rgba(198,138,79,0.10);
+}
+.rule-page-label {
+  display: inline-flex;
+  margin-bottom: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #FFE6A8;
+  border: 2px solid #F2C98A;
+  color: var(--wood-deep);
+  font-family: 'Jua', sans-serif;
+  font-size: 13px;
+}
+.rule-page h2 { margin: 0 0 10px; font-size: 25px; }
+.rule-page p { font-family:'Gaegu', sans-serif; font-size: 17px; line-height: 1.33; margin: 2px 0; color: var(--ink-soft); }
+.rule-goal {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #F3EAFB, #E2D3F2);
+  border: 3px solid #C8AEE8;
+  margin-bottom: 14px;
+}
+.rule-goal-icon { font-size: 40px; text-align: center; }
+.rule-goal b { font-size: 19px; }
+.rule-step-list { display: grid; gap: 8px; margin-top: 10px; }
+.rule-step {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 10px;
+  border-radius: 15px;
+  background: #FFFCF1;
+  border: 2px solid #F2D9A8;
+}
+.rule-step b {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--sunny);
+  border: 2px solid var(--sunny-deep);
+  color: #6B3F18;
+}
+.rule-step span { font-family:'Gaegu', sans-serif; font-size: 17px; line-height: 1.25; }
+.rule-mini-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+}
+.rule-mini-cards div {
+  border-radius: 15px;
+  background: white;
+  border: 2px solid #F2D9A8;
+  padding: 9px;
+  text-align: center;
+}
+.rule-mini-cards strong { display: block; font-size: 16px; }
+.rule-mini-cards span { display: block; font-family:'Gaegu'; font-size: 14px; color: var(--ink-soft); line-height: 1.15; }
+.rule-action-row {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 10px 0;
+  border-bottom: 1.5px dashed rgba(142,90,46,0.22);
+}
+.rule-action-row > span { font-size: 32px; text-align: center; }
+.rule-action-row b { font-size: 18px; }
+.rule-alert {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #FBE0DC, #F6C8C2);
+  border: 3px solid #ED9C92;
+  font-family:'Gaegu', sans-serif;
+  font-size: 18px;
+  line-height: 1.25;
+  color: #7A2A22;
+}
+.rule-alert.soft {
+  background: linear-gradient(180deg, #ECF6FE, #DCEEFB);
+  border-color: #8FC4ED;
+  color: #1F5C8E;
+}
+.rule-start-btn { display: block; width: min(420px, calc(100% - 36px)); margin: 0 auto 24px; padding: 16px 18px; }
+@media (max-width: 760px) {
+  .rule-book { background: linear-gradient(180deg, #FFF8E7, #FFF3D6); }
+  .rule-book-pages { grid-template-columns: 1fr; padding: 18px; }
+  .rule-page { min-height: auto; }
+  .rule-mini-cards { grid-template-columns: 1fr; }
+  .rule-float { right: 12px; bottom: 12px; padding: 9px 12px; }
+}
+
 @media (max-width: 720px) {
   .quick-stat-row, .month-summary-grid { grid-template-columns: 1fr 1fr; }
 }
@@ -1276,15 +1455,199 @@ input { font-family: inherit; }
   .player-layout { grid-template-columns: 1fr; }
 }
 
-  </style>
+  
+
+/* v15: 짧고 읽기 쉬운 빠른 규칙서 */
+.simple-rule-book {
+  width: min(900px, 96vw);
+  max-height: 92vh;
+  background: linear-gradient(180deg, #FFF8E7 0%, #FFF3D6 100%);
+  border-width: 4px;
+  box-shadow: inset 0 -6px 0 rgba(142,90,46,0.14), 0 12px 0 #6B3F18, 0 24px 60px rgba(0,0,0,0.34);
+}
+.simple-rule-cover {
+  padding: 15px 22px;
+}
+.simple-rule-subtitle {
+  margin-top: 3px;
+  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.86);
+  letter-spacing: -0.2px;
+}
+.simple-rule-pages {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  padding: 22px 26px 14px;
+}
+.simple-rule-page {
+  min-height: auto;
+  background: rgba(255,255,255,0.86);
+  border: 3px solid #F2D9A8;
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow: inset 0 -4px 0 rgba(198,138,79,0.08), 0 4px 0 #F2D9A8;
+}
+.simple-rule-page h2 {
+  margin: 0 0 12px;
+  font-family: 'Jua', 'Noto Sans KR', sans-serif;
+  font-size: clamp(24px, 3vw, 32px);
+  line-height: 1.12;
+  letter-spacing: -0.4px;
+  color: var(--ink);
+}
+.simple-rule-page .rule-page-label {
+  font-size: 14px;
+  padding: 5px 12px;
+  margin-bottom: 12px;
+}
+.simple-goal-card {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 14px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #F3EAFB, #E2D3F2);
+  border: 3px solid #C8AEE8;
+}
+.simple-goal-card.muted {
+  background: linear-gradient(180deg, #ECF6FE, #DCEEFB);
+  border-color: #8FC4ED;
+}
+.simple-goal-icon {
+  font-size: 42px;
+  text-align: center;
+  line-height: 1;
+}
+.simple-goal-card b {
+  display: block;
+  margin-bottom: 4px;
+  font-family: 'Jua', 'Noto Sans KR', sans-serif;
+  font-size: 21px;
+  line-height: 1.15;
+}
+.simple-goal-card span {
+  display: block;
+  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--ink-soft);
+  word-break: keep-all;
+}
+.simple-rule-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.simple-rule-card {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 10px;
+  align-items: center;
+  min-height: 96px;
+  padding: 13px;
+  border-radius: 18px;
+  background: #FFFCF1;
+  border: 3px solid #F2D9A8;
+  box-shadow: inset 0 -3px 0 rgba(198,138,79,0.08);
+}
+.simple-rule-card .emoji {
+  font-size: 34px;
+  line-height: 1;
+  text-align: center;
+}
+.simple-rule-card b {
+  display: block;
+  margin-bottom: 4px;
+  font-family: 'Jua', 'Noto Sans KR', sans-serif;
+  font-size: 20px;
+  line-height: 1.1;
+}
+.simple-rule-card span {
+  display: block;
+  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--ink-soft);
+  word-break: keep-all;
+}
+.simple-rule-list {
+  display: grid;
+  gap: 10px;
+}
+.simple-rule-item {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: white;
+  border: 3px solid #F2D9A8;
+  box-shadow: inset 0 -3px 0 rgba(198,138,79,0.07);
+}
+.simple-rule-item.rice { border-color: #D7B56D; background: #FFF8E3; }
+.simple-rule-item.happy { border-color: #8FD082; background: #F0F9EC; }
+.simple-rule-item.coin { border-color: #F2C260; background: #FFF2BF; }
+.simple-rule-item strong {
+  font-family: 'Jua', 'Noto Sans KR', sans-serif;
+  font-size: 20px;
+  line-height: 1.1;
+}
+.simple-rule-item span {
+  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--ink-soft);
+  word-break: keep-all;
+}
+.simple-warning {
+  margin-top: 14px;
+  padding: 15px 16px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #FBE0DC, #F6C8C2);
+  border: 3px solid #ED9C92;
+  color: #7A2A22;
+  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+.simple-warning b {
+  font-family: 'Jua', 'Noto Sans KR', sans-serif;
+  font-size: 20px;
+}
+.simple-start-btn {
+  width: min(380px, calc(100% - 36px));
+  margin: 4px auto 22px;
+  padding: 15px 18px;
+  font-size: 22px;
+}
+@media (max-width: 760px) {
+  .simple-rule-pages { grid-template-columns: 1fr; padding: 18px; }
+  .simple-rule-grid { grid-template-columns: 1fr; }
+  .simple-rule-item { grid-template-columns: 94px 1fr; }
+  .simple-rule-card { min-height: auto; }
+}
+
+</style>
 </head>
 <body>
   <div id="root"></div>
   
 <script>
+
 /* eslint-disable */
 // ═══════════════════════════════════════════════════════════════
-//   우리 마을 경제 매니저 — 개인 로그라이크 모드 v10
+//   우리 마을 경제 매니저 — 개인 로그라이크 모드 v14
 //   수업용 13명 모드 + 혼자 연습 모드 / 30분 타이머 / 랜덤 목표 / 랜덤 이벤트
 // ═══════════════════════════════════════════════════════════════
 
@@ -1358,8 +1721,8 @@ var FACILITIES = {
   market: {
     icon: '🛒', name: '시장', cost: 3, upgradeCost: 4,
     prod: {}, prod2: {},
-    desc: '시장 거래 비용을 낮추고 판매 효율을 높입니다.',
-    short: '거래 할인·판매 보너스'
+    desc: '시장 거래 비용을 낮추고 매월 소액 수익을 만듭니다.',
+    short: '구매 할인·월 수익'
   }
 };
 
@@ -1374,39 +1737,39 @@ var RESOURCES = {
 var PLAYER_GOALS = {
   happy: {
     icon: '😊', title: '행복한 마을',
-    condition: '행복도 90 이상',
-    desc: '경제보다 주민 만족을 최우선으로 하는 마을입니다.'
+    condition: '행복도 95 이상 + 행복한 달 8회',
+    desc: '한 번만 행복한 마을이 아니라, 여러 달 동안 높은 행복을 유지해야 합니다.'
   },
   rich: {
     icon: '💰', title: '부자 마을',
-    condition: '코인 50 이상',
-    desc: '수익 구조를 잘 만들어 재정이 풍부한 마을입니다.'
+    condition: '코인 100 이상 + 행복 45 이상 + 쌀 부족 0회',
+    desc: '돈만 많이 모으는 것이 아니라, 굶주림과 주민 불만 없이 부자가 되어야 합니다.'
   },
   industry: {
     icon: '🏭', title: '산업 마을',
-    condition: '제품 15개 이상 + 코인 30 이상',
-    desc: '제품 생산과 판매를 중심으로 성장하는 마을입니다.'
+    condition: '누적 제품 생산 70개 이상 + 코인 60 이상 + 행복 35 이상',
+    desc: '제품을 누적 생산하고 판매 수익도 확보하되, 산업화로 인한 행복도 하락도 관리해야 합니다.'
   },
   self: {
     icon: '🌾', title: '자급자족 마을',
-    condition: '쌀 20개 이상 + 쌀 부족 0회',
-    desc: '식량 위기에 흔들리지 않는 안정적인 마을입니다.'
+    condition: '쌀 120개 이상 + 식량 안정 8회 + 행복 60 이상',
+    desc: '쌀만 쌓아두는 것이 아니라, 오랫동안 굶주림 없이 안정적인 생활을 유지해야 합니다.'
   },
   balanced: {
     icon: '⚖️', title: '균형 발전 마을',
-    condition: '행복 70 이상 + 코인 25 이상 + 모든 자원 3개 이상',
-    desc: '돈, 식량, 복지, 문화가 고르게 발달한 마을입니다.'
+    condition: '행복 80 이상 + 코인 45 이상 + 모든 자원 5개 이상',
+    desc: '한쪽으로 몰아 키우면 달성하기 어렵고, 모든 자원을 고르게 관리해야 합니다.'
   },
   safe: {
     icon: '🏥', title: '안전한 마을',
-    condition: '의료 6 이상 + 행복 75 이상 + 위기 피해 2회 이하',
-    desc: '위기 대응과 주민 안전을 중시하는 마을입니다.'
+    condition: '의료 22 이상 + 행복 85 이상 + 식량 안정 8회 + 위기 피해 1회 이하',
+    desc: '의료 비축, 행복도, 식량 안정, 위기 피해 관리가 모두 필요한 목표입니다.'
   }
 };
 
 var EVENT_DECK = [
-  { id: 'small_support', tier: 'mild', icon: '🎁', name: '작은 지원금', desc: '초기 정착 지원을 받았습니다. 코인 +3',
-    apply: function(p, ctx){ p.coins += 3; ctx.notes.push('코인 +3'); } },
+  { id: 'small_support', tier: 'mild', icon: '🎁', name: '작은 지원금', desc: '초기 정착 지원을 받았습니다. 코인 +2',
+    apply: function(p, ctx){ p.coins += 2; ctx.notes.push('코인 +2'); } },
   { id: 'neighbor_help', tier: 'mild', icon: '🤝', name: '이웃 도움', desc: '이웃 마을에서 남는 쌀을 나눠주었습니다. 쌀 +2',
     apply: function(p, ctx){ p.resources.rice += 2; ctx.notes.push('쌀 +2'); } },
   { id: 'resident_request', tier: 'mild', icon: '📢', name: '주민 건의', desc: '주민들이 생활 개선을 요구합니다. 행복 -2',
@@ -1423,15 +1786,15 @@ var EVENT_DECK = [
       ctx.eventDamage = true;
       ctx.notes.push('전기 -2, 행복 -3');
     } },
-  { id: 'festival', tier: 'normal', icon: '🎭', name: '문화 축제', desc: '관광지가 있으면 행복 +8, 코인 +5. 없으면 행복 +2.',
+  { id: 'festival', tier: 'normal', icon: '🎭', name: '문화 축제', desc: '관광지가 있으면 행복 +8, 코인 +3. 없으면 행복 +2.',
     apply: function(p, ctx){
       var hasTourist = (p.facilities.tourist || 0) > 0;
-      if (hasTourist) { ctx.happinessDelta += 8; p.coins += 5; ctx.notes.push('행복 +8, 코인 +5'); }
+      if (hasTourist) { ctx.happinessDelta += 8; p.coins += 3; ctx.notes.push('행복 +8, 코인 +3'); }
       else { ctx.happinessDelta += 2; ctx.notes.push('행복 +2'); }
     } },
-  { id: 'quality_cert', tier: 'normal', icon: '🏅', name: '품질 인증', desc: '논이 2개 이상이면 코인 +8, 아니면 코인 +1.',
+  { id: 'quality_cert', tier: 'normal', icon: '🏅', name: '품질 인증', desc: '논이 2개 이상이면 코인 +4, 아니면 코인 +1.',
     apply: function(p, ctx){
-      if ((p.facilities.farm || 0) >= 2) { p.coins += 8; ctx.notes.push('코인 +8'); }
+      if ((p.facilities.farm || 0) >= 2) { p.coins += 4; ctx.notes.push('코인 +4'); }
       else { p.coins += 1; ctx.notes.push('코인 +1'); }
     } },
   { id: 'disease', tier: 'hard', crisis: true, icon: '🦠', name: '전염병 경보', desc: '행복이 감소합니다. 병원이 있으면 피해가 줄어듭니다.',
@@ -1455,8 +1818,8 @@ var EVENT_DECK = [
     } },
   { id: 'boom', tier: 'hard', icon: '🛒', name: '시장 활황', desc: '제품을 보유하고 있으면 제품 1개가 자동 판매됩니다.',
     apply: function(p, ctx){
-      if (p.resources.product > 0) { p.resources.product -= 1; p.coins += 5; p.stats.totalProductSold += 1; ctx.notes.push('제품 -1, 코인 +5'); }
-      else { p.coins += 2; ctx.notes.push('코인 +2'); }
+      if (p.resources.product > 0) { p.resources.product -= 1; p.coins += 3; p.stats.totalProductSold += 1; ctx.notes.push('제품 -1, 코인 +3'); }
+      else { p.coins += 1; ctx.notes.push('코인 +1'); }
     } }
 ];
 
@@ -1500,6 +1863,7 @@ function initPlayer(id) {
     name: '',
     villageName: id + '번 마을',
     joined: false,
+    rulesSeen: false,
     goalId: null,
     month: 1,
     bonusMode: false,
@@ -1516,11 +1880,14 @@ function initPlayer(id) {
       electricityShortageCount: 0,
       eventDamageCount: 0,
       totalProductSold: 0,
+      totalProductProduced: 0,
       totalElectricitySold: 0,
       totalRiceSold: 0,
       totalCultureUsed: 0,
       totalMedicalUsed: 0,
       totalMonthsProcessed: 0,
+      highHappinessMonths: 0,
+      stableFoodMonths: 0,
       shield: 0
     },
     recentEvent: null,
@@ -1539,7 +1906,7 @@ function initPlayers() {
 }
 function initApp() {
   return {
-    version: 'roguelike_v10_solo_mode',
+    version: 'roguelike_v15_readable_rulebook',
     mode: 'personal_roguelike',
     startedAt: null,
     running: false,
@@ -1639,6 +2006,11 @@ function getMarketDiscount(p) {
   return level >= 2 ? 2 : 1;
 }
 function getMarketFee(p) { return p.tempMarketFee || 0; }
+function getUpgradeCost(p, fid) {
+  var cnt = (p.facilities && p.facilities[fid]) || 0;
+  var base = FACILITIES[fid] ? FACILITIES[fid].upgradeCost : 0;
+  return base * Math.max(1, cnt);
+}
 function calculateIndustrialStress(p) {
   var stress = 0;
   var factories = p.facilities.factory || 0;
@@ -1702,6 +2074,7 @@ function produceResources(p, ctx) {
     if (powered > 0) {
       var product = powered * productPerFactory;
       p.resources.product += product;
+      p.stats.totalProductProduced = (p.stats.totalProductProduced || 0) + product;
       ctx.notes.push('공장 가동: 제품 +' + product + ', 전기 -' + powered);
     }
     if (powered < need) {
@@ -1718,10 +2091,11 @@ function processMonth(original) {
   if (p.finished) return p;
   var maxMonth = p.bonusMode ? BONUS_MAX_MONTH : MAX_MONTH;
   var ctx = { riceMultiplier: 1, happinessDelta: -2, eventDamage: false, notes: ['기본 생활 불만: 행복 -2'] };
+  var foodStable = true;
   p.tempMarketFee = 0;
 
-  var baseIncome = 2;
-  var marketIncome = (p.facilities.market || 0) > 0 ? (p.facilityLevels.market >= 2 ? 2 : 1) : 0;
+  var baseIncome = 1;
+  var marketIncome = (p.facilities.market || 0) > 0 ? 1 : 0;
   p.coins += baseIncome + marketIncome;
   ctx.notes.push('기본 세금 +' + baseIncome + '코인' + (marketIncome ? ', 시장 수익 +' + marketIncome + '코인' : ''));
 
@@ -1739,6 +2113,7 @@ function processMonth(original) {
     var shortage = foodNeed - (p.resources.rice || 0);
     p.resources.rice = 0;
     p.stats.riceShortageCount += 1;
+    foodStable = false;
     var penalty = shortage === 1 ? 5 : 12;
     if (shortage >= 3) penalty = 15;
     ctx.happinessDelta -= penalty;
@@ -1754,6 +2129,8 @@ function processMonth(original) {
 
   if (ctx.eventDamage) p.stats.eventDamageCount += 1;
   p.happiness = clamp((p.happiness || 0) + ctx.happinessDelta, 0, 100);
+  if (foodStable) p.stats.stableFoodMonths = (p.stats.stableFoodMonths || 0) + 1;
+  if (p.happiness >= 85) p.stats.highHappinessMonths = (p.stats.highHappinessMonths || 0) + 1;
 
   if (p.happiness >= 10 && p.happiness <= 29) {
     p.coins = Math.max(0, p.coins - 2);
@@ -1786,18 +2163,57 @@ function processMonth(original) {
   return p;
 }
 
+function goalPart(current, target) {
+  return clamp((current || 0) / target, 0, 1);
+}
+function goalPenaltyPart(count, allowed) {
+  count = count || 0;
+  if (count <= allowed) return 1;
+  return Math.max(0, 1 - (count - allowed) * 0.5);
+}
+function averageGoal(parts) {
+  var sum = parts.reduce(function(a,b){ return a + clamp(b, 0, 1); }, 0);
+  return Math.round((sum / parts.length) * 100);
+}
 function calculateGoalProgress(p) {
   var r = p.resources || emptyResources();
+  var st = p.stats || {};
   var g = p.goalId;
   if (!g) return 0;
-  var progress = 0;
-  if (g === 'happy') progress = p.happiness / 90;
-  else if (g === 'rich') progress = p.coins / 50;
-  else if (g === 'industry') progress = ((r.product || 0) / 15 + (p.coins || 0) / 30) / 2;
-  else if (g === 'self') progress = ((r.rice || 0) / 20 + Math.max(0, 1 - (p.stats.riceShortageCount || 0) / 2)) / 2;
-  else if (g === 'balanced') progress = ((p.happiness || 0) / 70 + (p.coins || 0) / 25 + Math.min(r.rice || 0, r.electricity || 0, r.medical || 0, r.culture || 0, r.product || 0) / 3) / 3;
-  else if (g === 'safe') progress = ((r.medical || 0) / 6 + (p.happiness || 0) / 75 + Math.max(0, 1 - (p.stats.eventDamageCount || 0) / 3)) / 3;
-  return pct(progress);
+
+  // v13 구조적 밸런스: 월수 상한 꼼수 없이, 누적 안정/누적 행복/복합 조건으로 초반 달성을 막습니다.
+  if (g === 'happy') return averageGoal([
+    goalPart(p.happiness, 95),
+    goalPart(st.highHappinessMonths || 0, 8)
+  ]);
+  if (g === 'rich') return averageGoal([
+    goalPart(p.coins, 100),
+    goalPart(p.happiness, 45),
+    goalPenaltyPart(st.riceShortageCount || 0, 0)
+  ]);
+  if (g === 'industry') return averageGoal([
+    goalPart(st.totalProductProduced || 0, 70),
+    goalPart(p.coins, 60),
+    goalPart(p.happiness, 35)
+  ]);
+  if (g === 'self') return averageGoal([
+    goalPart(r.rice, 120),
+    goalPart(st.stableFoodMonths || 0, 8),
+    goalPart(p.happiness, 60),
+    goalPenaltyPart(st.riceShortageCount || 0, 0)
+  ]);
+  if (g === 'balanced') return averageGoal([
+    goalPart(p.happiness, 80),
+    goalPart(p.coins, 45),
+    goalPart(Math.min(r.rice || 0, r.electricity || 0, r.medical || 0, r.culture || 0, r.product || 0), 5)
+  ]);
+  if (g === 'safe') return averageGoal([
+    goalPart(r.medical, 22),
+    goalPart(p.happiness, 85),
+    goalPart(st.stableFoodMonths || 0, 8),
+    goalPenaltyPart(st.eventDamageCount || 0, 1)
+  ]);
+  return 0;
 }
 function getGrade(progress) {
   if (progress >= 100) return 'S';
@@ -1870,7 +2286,9 @@ function TimerDisplay(props) {
 
 function StartScreen(props) {
   var classroomDisabled = !!props.firebaseError;
-  return h('div', { className: 'sky-bg', style: { minHeight:'100vh', padding: 24, display:'flex', alignItems:'center', justifyContent:'center' } },
+  var rulePreviewTuple = useState(false);
+  var rulePreviewOpen = rulePreviewTuple[0], setRulePreviewOpen = rulePreviewTuple[1];
+  return h(React.Fragment, null, h('div', { className: 'sky-bg', style: { minHeight:'100vh', padding: 24, display:'flex', alignItems:'center', justifyContent:'center' } },
     h('div', { className: 'plate', style: { maxWidth: 920, width:'100%', padding: 34, textAlign:'center' } },
       h('div', { className: 'pennant', style:{ marginBottom: 24 } }, '30분 성장 챌린지'),
       h('h1', { style: { fontFamily:'Jua', fontSize: 42, margin:'16px 0 8px' } }, '🏘️ 우리 마을 경제 매니저'),
@@ -1883,10 +2301,11 @@ function StartScreen(props) {
       h('div', { className:'bubble banner-info-blue', style:{ marginTop: 30, textAlign:'left', fontFamily:'Gaegu', fontSize: 19, lineHeight:1.45 } },
         h('b', null, '수업 모드: '), '교사가 30분 타이머를 시작하면 13명이 동시에 진행합니다.', h('br'),
         h('b', null, '혼자 연습: '), '번호 선택과 교사용 타이머 없이, 이름 입력 후 30분 타이머가 자동으로 시작됩니다.'),
+      h('button', { className:'pill', style:{ marginTop:18 }, onClick:function(){ setRulePreviewOpen(true); } }, '📖 규칙서 미리보기'),
       props.firebaseError ? h('div', { className:'bubble banner-event', style:{ marginTop:18, textAlign:'left', fontFamily:'Gaegu', fontSize:18, lineHeight:1.45 } },
         'Firebase 연결이 되지 않아 수업 모드는 잠시 사용할 수 없습니다. 혼자 연습은 이 브라우저 안에서 바로 할 수 있습니다.') : null
     )
-  );
+  ), h(RuleBookModal, { open:rulePreviewOpen, onClose:function(){ setRulePreviewOpen(false); } }));
 }
 
 function PasswordModal(props) {
@@ -1987,14 +2406,29 @@ function PlayerView(props) {
   var now = useNow(1000);
   var transitionTuple = useState(null);
   var monthTransition = transitionTuple[0], setMonthTransition = transitionTuple[1];
+  var ruleTuple = useState(false);
+  var ruleBookOpen = ruleTuple[0], setRuleBookOpen = ruleTuple[1];
+  var ruleDismissTuple = useState(false);
+  var ruleDismissed = ruleDismissTuple[0], setRuleDismissed = ruleDismissTuple[1];
   var timeUp = isTimeUp(props.gameState, now);
   var p = props.gameState.players[String(props.activePlayer)] || initPlayer(props.activePlayer);
+  useEffect(function(){
+    if (p.joined && !p.rulesSeen && !ruleDismissed) setRuleBookOpen(true);
+  }, [p.id, p.joined, p.rulesSeen, ruleDismissed]);
   if (!p.joined) return h(JoinPanel, { player:p, gameState:props.gameState, saveState:props.saveState, setMode:props.setMode, soloMode:props.soloMode });
   var goal = PLAYER_GOALS[p.goalId];
   var disabled = timeUp || p.finished || !props.gameState.startedAt;
 
   function savePlayer(updater) {
     props.saveState(updatePlayerInState(props.gameState, p.id, updater));
+  }
+  function openRuleBook() { setRuleBookOpen(true); }
+  function closeRuleBook() {
+    setRuleDismissed(true);
+    setRuleBookOpen(false);
+    if (p.joined && !p.rulesSeen) {
+      savePlayer(function(x){ x.rulesSeen = true; return x; });
+    }
   }
   function canAct() { return !disabled && p.actionsLeft > 0; }
   function buildFacility(fid) {
@@ -2016,13 +2450,14 @@ function PlayerView(props) {
     var fac = FACILITIES[fid];
     if ((p.facilities[fid] || 0) <= 0) return alert('먼저 시설을 지어야 합니다.');
     if ((p.facilityLevels[fid] || 1) >= 2) return alert('이미 2단계입니다.');
-    if (p.coins < fac.upgradeCost) return alert('코인이 부족합니다.');
+    var cost = getUpgradeCost(p, fid);
+    if (p.coins < cost) return alert('코인이 부족합니다.');
     savePlayer(function(x){
       x = ensureMonthSnapshot(x);
-      x.coins -= fac.upgradeCost;
+      x.coins -= cost;
       x.facilityLevels[fid] = 2;
       x.actionsLeft -= 1;
-      x.log = (x.log || []).concat(['전체 강화: ' + fac.name + ' Lv.2']).slice(-8);
+      x.log = (x.log || []).concat(['전체 강화: ' + fac.name + ' Lv.2 -' + cost + '코인']).slice(-8);
       return x;
     });
   }
@@ -2039,19 +2474,19 @@ function PlayerView(props) {
     if (action === 'sell_product' || action === 'sell_electricity' || action === 'sell_rice') {
       var sellMap = {
         sell_product: { rid:'product', need:1, coin:3, label:'제품 판매', stat:'totalProductSold' },
-        sell_electricity: { rid:'electricity', need:2, coin:3, label:'전기 판매', stat:'totalElectricitySold' },
-        sell_rice: { rid:'rice', need:3, coin:2, label:'쌀 판매', stat:'totalRiceSold' }
+        sell_electricity: { rid:'electricity', need:3, coin:2, label:'전기 판매', stat:'totalElectricitySold' },
+        sell_rice: { rid:'rice', need:4, coin:2, label:'쌀 판매', stat:'totalRiceSold' }
       };
       var s = sellMap[action];
       if ((p.resources[s.rid] || 0) < s.need) return alert('판매할 ' + RESOURCES[s.rid].name + '이(가) 부족합니다.');
       savePlayer(function(x){
         x = ensureMonthSnapshot(x);
-        var bonus = (x.facilities.market || 0) > 0 ? ((x.facilityLevels.market || 1) >= 2 ? 2 : 1) : 0;
+        var bonus = 0;
         x.resources[s.rid] -= s.need;
         x.coins += s.coin + bonus;
         x.stats[s.stat] = (x.stats[s.stat] || 0) + 1;
         x.actionsLeft -= 1;
-        x.log = (x.log || []).concat(['시장: ' + s.label + ' +' + (s.coin + bonus) + '코인']).slice(-8);
+        x.log = (x.log || []).concat(['시장: ' + s.label + ' +' + s.coin + '코인']).slice(-8);
         return x;
       });
       return;
@@ -2196,6 +2631,8 @@ function PlayerView(props) {
       )
     )
   ),
+  h('button', { className:'rule-float', onClick:openRuleBook, title:'규칙서 다시 보기' }, h('span', { className:'book-emoji' }, '📖'), h('span', null, '규칙서')),
+  h(RuleBookModal, { open:ruleBookOpen, onClose:closeRuleBook, player:p, goal:goal }),
   h(MonthTransitionModal, { data:monthTransition, onClose:function(){ setMonthTransition(null); } })
   );
 }
@@ -2232,7 +2669,7 @@ function GameActions(props) {
         h('div', { className:'ic' }, fac.icon),
         h('div', { style:{ minWidth:0, flex:1 } },
           h('div', { className:'nm' }, fac.name + ' x' + cnt + ' · Lv.' + level),
-          h('div', { className:'cost' }, '건설 ' + fac.cost + ' / 강화 ' + fac.upgradeCost),
+          h('div', { className:'cost' }, '건설 ' + fac.cost + ' / 강화 ' + getUpgradeCost(p, fid)),
           h('div', { style:{ fontFamily:'Gaegu', fontSize:13, color:'#8A6B4F', marginTop:2, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' } }, fac.short || fac.desc)
         ),
         h('div', { className:'ctr' },
@@ -2243,7 +2680,7 @@ function GameActions(props) {
     })),
     h('div', { className:'section-title-compact', style:{ marginTop:16 } },
       h('h3', null, '🛒 시장'),
-      h('span', { className:'tip-small' }, '구매보다 판매가 코인 수급 핵심')
+      h('span', { className:'tip-small' }, '판매 수익 하향 · 시장은 월수익/할인 중심')
     ),
     h('div', { className:'action-grid' },
       h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'🌾', title:'쌀 구매', desc:'-3코인 · +4', onClick:function(){ props.market('buy_rice'); } }),
@@ -2251,8 +2688,8 @@ function GameActions(props) {
       h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'🏥', title:'의료 구매', desc:'-4코인 · +2', onClick:function(){ props.market('buy_medical'); } }),
       h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'🎭', title:'문화 구매', desc:'-4코인 · +2', onClick:function(){ props.market('buy_culture'); } }),
       h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'🏭', title:'제품 판매', desc:'제품-1 · +3', onClick:function(){ props.market('sell_product'); } }),
-      h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'⚡', title:'전기 판매', desc:'전기-2 · +3', onClick:function(){ props.market('sell_electricity'); } }),
-      h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'🌾', title:'쌀 판매', desc:'쌀-3 · +2', onClick:function(){ props.market('sell_rice'); } })
+      h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'⚡', title:'전기 판매', desc:'전기-3 · +2', onClick:function(){ props.market('sell_electricity'); } }),
+      h(ActionButton, { compact:true, disabled:!props.canAct(), icon:'🌾', title:'쌀 판매', desc:'쌀-4 · +2', onClick:function(){ props.market('sell_rice'); } })
     ),
     h('div', { className:'section-title-compact', style:{ marginTop:16 } },
       h('h3', null, '😊 행복'),
@@ -2268,6 +2705,64 @@ function GameActions(props) {
     h('button', { className:'settle-btn', disabled:props.disabled, onClick:props.nextMonth, style:{ marginTop:18 } }, '🌙 이번 달 마무리하기')
   );
 }
+
+function RuleBookModal(props) {
+  if (!props.open) return null;
+  var goal = props.goal || null;
+  return h('div', { className:'modal-bg rulebook-backdrop' },
+    h('div', { className:'rule-book simple-rule-book' },
+      h('div', { className:'rule-book-cover simple-rule-cover' },
+        h('div', null,
+          h('div', { className:'rule-book-title' }, '📖 빠른 규칙서'),
+          h('div', { className:'simple-rule-subtitle' }, '처음엔 이것만 보고 시작해도 됩니다')
+        ),
+        h('button', { className:'rule-close', onClick:props.onClose, 'aria-label':'규칙서 닫기' }, '×')
+      ),
+      h('div', { className:'simple-rule-pages' },
+        h('div', { className:'rule-page simple-rule-page' },
+          h('div', { className:'rule-page-label' }, '1쪽 · 게임 목표'),
+          h('h2', null, '10개월 동안 마을 키우기'),
+          goal ? h('div', { className:'simple-goal-card' },
+            h('div', { className:'simple-goal-icon' }, goal.icon),
+            h('div', null,
+              h('b', null, goal.title),
+              h('span', null, goal.condition)
+            )
+          ) : h('div', { className:'simple-goal-card muted' },
+            h('div', { className:'simple-goal-icon' }, '🎯'),
+            h('div', null,
+              h('b', null, '랜덤 목표'),
+              h('span', null, '게임을 시작하면 목표가 하나 정해집니다.')
+            )
+          ),
+          h('div', { className:'simple-rule-grid' },
+            h('div', { className:'simple-rule-card' }, h('div', { className:'emoji' }, '🖐️'), h('div', null, h('b', null, '월 5번 행동'), h('span', null, '버튼 1번 = 행동 1회'))),
+            h('div', { className:'simple-rule-card' }, h('div', { className:'emoji' }, '🏗️'), h('div', null, h('b', null, '짓거나 강화'), h('span', null, '시설로 생산을 늘립니다'))),
+            h('div', { className:'simple-rule-card' }, h('div', { className:'emoji' }, '🛒'), h('div', null, h('b', null, '사고팔기'), h('span', null, '부족한 자원을 사고, 남는 자원은 팝니다'))),
+            h('div', { className:'simple-rule-card' }, h('div', { className:'emoji' }, '🌙'), h('div', null, h('b', null, '달 마무리'), h('span', null, '생산·소비·사건이 정산됩니다')))
+          )
+        ),
+        h('div', { className:'rule-page simple-rule-page' },
+          h('div', { className:'rule-page-label' }, '2쪽 · 꼭 기억할 것'),
+          h('h2', null, '좋은 마을의 3가지'),
+          h('div', { className:'simple-rule-list' },
+            h('div', { className:'simple-rule-item rice' }, h('strong', null, '🌾 쌀'), h('span', null, '부족하면 행복이 크게 떨어집니다.')),
+            h('div', { className:'simple-rule-item happy' }, h('strong', null, '😊 행복'), h('span', null, '낮으면 코인 손실·행동 감소가 생깁니다.')),
+            h('div', { className:'simple-rule-item coin' }, h('strong', null, '💰 코인'), h('span', null, '건설·구매에 필요합니다. 시장과 판매로 벌 수 있습니다.')),
+            h('div', { className:'simple-rule-item' }, h('strong', null, '⬆️ 강화'), h('span', null, '효율은 오르지만, 시설이 많을수록 비용도 커집니다.')),
+            h('div', { className:'simple-rule-item' }, h('strong', null, '⏪ 타임머신'), h('span', null, '이번 달 선택만 되돌립니다. 전체 2번만 사용!'))
+          ),
+          h('div', { className:'simple-warning' },
+            h('b', null, '핵심! '),
+            h('span', null, '쌀만 많아도 좋은 마을은 아닙니다. 코인과 행복도 함께 관리하세요.')
+          )
+        )
+      ),
+      h('button', { className:'btn3d green rule-start-btn simple-start-btn', onClick:props.onClose }, '확인하고 시작하기')
+    )
+  );
+}
+
 function ActionButton(props) {
   return h('button', { className:'action-card ' + (props.compact ? 'compact' : ''), disabled:props.disabled, onClick:props.onClick },
     h('div', { className:'act-icon', style:props.compact ? null : { fontSize:28 } }, props.icon),
@@ -2453,7 +2948,7 @@ function App() {
   }
   function makeSoloState() {
     var s = initApp();
-    s.version = 'roguelike_v10_solo_mode';
+    s.version = 'roguelike_v15_readable_rulebook_solo';
     s.soloMode = true;
     s.startedAt = null;
     s.running = false;
@@ -2465,7 +2960,7 @@ function App() {
     setMode('solo');
   }
   function saveSoloState(next) {
-    next = migrateGameState(Object.assign({}, next, { updatedAt: nowMs(), soloMode: true, version: 'roguelike_v10_solo_mode' }));
+    next = migrateGameState(Object.assign({}, next, { updatedAt: nowMs(), soloMode: true, version: 'roguelike_v15_readable_rulebook' }));
     setSoloState(next);
   }
 
@@ -2487,6 +2982,7 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+
 </script>
 </body>
 </html>
